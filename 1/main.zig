@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn main() anyerror!void {
+pub fn main() !void {
     var file = try std.fs.cwd().openFile("input", .{});
     // var file = try std.fs.cwd().openFile("easy_input_part_one", .{});
     defer file.close();
