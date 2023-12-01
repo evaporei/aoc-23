@@ -9,7 +9,7 @@ pub fn main() !void {
     var buf_reader = std.io.bufferedReader(file.reader());
     var in_stream = buf_reader.reader();
 
-    // max line in file has 51 ASCII characters
+    // max line in input file has 51 ASCII characters (+ \n)
     var buf: [52]u8 = undefined;
     var total: u32 = 0;
     while (try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
