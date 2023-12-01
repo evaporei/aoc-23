@@ -1,8 +1,9 @@
 const std = @import("std");
 
 pub fn main() !void {
-    var file = try std.fs.cwd().openFile("input", .{});
-    // var file = try std.fs.cwd().openFile("easy_input_part_one", .{});
+    // var file = try std.fs.cwd().openFile("input", .{}); // 54951
+    // var file = try std.fs.cwd().openFile("easy_input_part_one", .{}); // 142
+    var file = try std.fs.cwd().openFile("easy_input_part_two", .{}); // 209, 281
     defer file.close();
 
     var buf_reader = std.io.bufferedReader(file.reader());
