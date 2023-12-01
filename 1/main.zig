@@ -2,7 +2,7 @@ const std = @import("std");
 
 pub fn main() anyerror!void {
     var file = try std.fs.cwd().openFile("input", .{});
-    // var file = try std.fs.cwd().openFile("easy_input", .{});
+    // var file = try std.fs.cwd().openFile("easy_input_part_one", .{});
     defer file.close();
 
     var buf_reader = std.io.bufferedReader(file.reader());
