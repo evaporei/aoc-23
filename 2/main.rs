@@ -25,6 +25,40 @@ impl Set {
     fn blue(&mut self, amount: u8) {
         self.blue = Some(amount);
     }
+
+    fn parse(str_set: &str) -> Self {
+        // example input: " 1 red, 2 green, 6 blue"
+        // [" 1 red", " 2 green", " 6 blue"]
+        let mut cubes = str_set.split(',');
+        let mut set = Set::default();
+
+        // " 1 red" | " 2 green" | " 6 blue"
+        while let Some(cube) = cubes.next() {
+            if cube.contains("red") {
+                let amount = cube.split(' ') // [" ", "1", "red"]
+                    .skip(1) // ["1", "red"]
+                    .next() // "1"
+                    .unwrap();
+                set.red(amount.parse().unwrap());
+            }
+            if cube.contains("green") {
+                let amount = cube.split(' ')
+                    .skip(1)
+                    .next()
+                    .unwrap();
+                set.green(amount.parse().unwrap());
+            }
+            if cube.contains("blue") {
+                let amount = cube.split(' ')
+                    .skip(1)
+                    .next()
+                    .unwrap();
+                set.blue(amount.parse().unwrap());
+            }
+        }
+
+        set
+    }
 }
 
 #[derive(Debug)]
@@ -35,54 +69,28 @@ struct Game {
 
 impl Game {
     fn parse(line: &str) -> Self {
-        let id = line.split(' ').skip(1).next().unwrap();
-        let id = id[..id.len() - 1].parse().unwrap(); // remove `:`
+        // example input: "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
+        let id = line.split(' ') // ["Game", "1:", ...]
+            .skip(1) // ["1:", ...]
+            .next() // "1:"
+            .unwrap();
+        // remove `:`
+        let id = id[..id.len() - 1].parse().unwrap();
 
+        // ["Game 1: 3 blue, 4 red", "1 red, 2 green, 6 blue", "2 green"]
         let mut str_sets = line.split(';');
+
+        // "Game 1: 3 blue, 4 red"
         let first_set = str_sets.next().unwrap().to_owned();
+        // " 3 blue, 4 red"
         let first_set = first_set.split(':').skip(1).next().unwrap();
 
-        let mut cubes = first_set.split(',');
+        let first_set = Set::parse(first_set);
 
-        let mut set = Set::default();
-
-        while let Some(cube) = cubes.next() {
-            if cube.contains("red") {
-                let amount = cube.split(' ').skip(1).next().unwrap();
-                set.red(amount.parse().unwrap());
-            }
-            if cube.contains("green") {
-                let amount = cube.split(' ').skip(1).next().unwrap();
-                set.green(amount.parse().unwrap());
-            }
-            if cube.contains("blue") {
-                let amount = cube.split(' ').skip(1).next().unwrap();
-                set.blue(amount.parse().unwrap());
-            }
-        }
-
-        let mut sets = vec![set];
+        let mut sets = vec![first_set];
 
         for str_set in str_sets {
-            let mut cubes = str_set.split(',');
-
-            let mut set = Set::default();
-            while let Some(cube) = cubes.next() {
-                if cube.contains("red") {
-                    let amount = cube.split(' ').skip(1).next().unwrap();
-                    set.red(amount.parse().unwrap());
-                }
-                if cube.contains("green") {
-                    let amount = cube.split(' ').skip(1).next().unwrap();
-                    set.green(amount.parse().unwrap());
-                }
-                if cube.contains("blue") {
-                    let amount = cube.split(' ').skip(1).next().unwrap();
-                    set.blue(amount.parse().unwrap());
-                }
-            }
-
-            sets.push(set);
+            sets.push(Set::parse(str_set));
         }
 
         Self {
