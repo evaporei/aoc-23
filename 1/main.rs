@@ -96,14 +96,28 @@ struct DigitList(Vec<Digit>);
 
 impl From<DigitList> for usize {
     fn from(digits: DigitList) -> usize {
-        let mut it = digits.0.iter();
+        let mut it = digits.iter();
         let first_digit = it.next().unwrap().into();
         let last_digit = it.next_back().unwrap().into();
 
-        let mut s = String::with_capacity(digits.0.len());
+        let mut s = String::with_capacity(digits.len());
         s.push(first_digit);
         s.push(last_digit);
         s.parse().unwrap()
+    }
+}
+
+impl std::ops::Deref for DigitList {
+    type Target = Vec<Digit>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for DigitList {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
 
@@ -122,14 +136,15 @@ impl LineParser {
         let mut digits = DigitList(vec![]);
         for (i, ch) in self.line.bytes().enumerate() {
             if is_digit(ch) {
-                digits.0.push(Digit::from(ch));
+                digits.push(Digit::from(ch));
             } else if let Some(digit) = Digit::from_written(&self.line[i..]) {
-                digits.0.push(digit);
+                digits.push(digit);
             }
         }
 
-        if digits.0.len() == 1 {
-            digits.0.push(digits.0[0]);
+        if digits.len() == 1 {
+            let first = digits[0];
+            digits.push(first);
         }
 
         digits.into()
