@@ -28,13 +28,14 @@ const Digit = enum(u8) {
     }
 };
 
-const allocator = std.heap.page_allocator;
-
 fn isDigit(ch: u8) bool {
     return ch >= 49 and ch <= 57;
 }
 
 pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var allocator = gpa.allocator();
+
     var file = try std.fs.cwd().openFile("input", .{}); // 54951, 55218
     // var file = try std.fs.cwd().openFile("easy_input_part_one", .{}); // 142
     // var file = try std.fs.cwd().openFile("easy_input_part_two", .{}); // 209, 281
@@ -48,6 +49,7 @@ pub fn main() !void {
     var total: u32 = 0;
     while (try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
         var digits = std.ArrayList(Digit).init(allocator);
+        defer digits.deinit();
         var i: u16 = 0;
         for (line) |char| {
             if (isDigit(char)) {
