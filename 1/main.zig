@@ -18,33 +18,10 @@ const Digit = enum(u8) {
         return @intFromEnum(self) + 48;
     }
 
-    fn from_written(s: []const u8) ?Digit {
-        if (std.mem.startsWith(u8, s, "one")) {
-            return Digit.one;
-        }
-        if (std.mem.startsWith(u8, s, "two")) {
-            return Digit.two;
-        }
-        if (std.mem.startsWith(u8, s, "three")) {
-            return Digit.three;
-        }
-        if (std.mem.startsWith(u8, s, "four")) {
-            return Digit.four;
-        }
-        if (std.mem.startsWith(u8, s, "five")) {
-            return Digit.five;
-        }
-        if (std.mem.startsWith(u8, s, "six")) {
-            return Digit.six;
-        }
-        if (std.mem.startsWith(u8, s, "seven")) {
-            return Digit.seven;
-        }
-        if (std.mem.startsWith(u8, s, "eight")) {
-            return Digit.eight;
-        }
-        if (std.mem.startsWith(u8, s, "nine")) {
-            return Digit.nine;
+    fn from_written(str: []const u8) ?Digit {
+        inline for (@typeInfo(Digit).Enum.fields) |field| {
+            if (std.mem.startsWith(u8, str, field.name))
+                return @enumFromInt(field.value);
         }
         return null;
     }
