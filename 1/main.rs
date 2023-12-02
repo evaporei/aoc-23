@@ -94,13 +94,13 @@ impl Digit {
 #[derive(Debug)]
 struct DigitList(Vec<Digit>);
 
-impl DigitList {
-    fn to_n(self) -> usize {
-        let mut it = self.0.iter();
+impl From<DigitList> for usize {
+    fn from(digits: DigitList) -> usize {
+        let mut it = digits.0.iter();
         let first_digit = it.next().unwrap().into();
         let last_digit = it.next_back().unwrap().into();
 
-        let mut s = String::with_capacity(self.0.len());
+        let mut s = String::with_capacity(digits.0.len());
         s.push(first_digit);
         s.push(last_digit);
         s.parse().unwrap()
@@ -132,7 +132,7 @@ impl LineParser {
             digits.0.push(digits.0[0]);
         }
 
-        digits.to_n()
+        digits.into()
     }
 }
 
