@@ -1,7 +1,5 @@
 const std = @import("std");
 
-const numbers = [_][]const u8{ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
-
 const Digit = enum(u8) {
     one = 1,
     two,
@@ -23,12 +21,43 @@ const Digit = enum(u8) {
             7 => Digit.seven,
             8 => Digit.eight,
             9 => Digit.nine,
-            else => @panic("this ain't no digit pal"),
+            else => unreachable,
         };
     }
 
     fn to_char(self: Digit) u8 {
         return @intFromEnum(self) + 48;
+    }
+
+    fn from_written(s: []const u8) ?Digit {
+        if (std.mem.startsWith(u8, s, "one")) {
+            return Digit.one;
+        }
+        if (std.mem.startsWith(u8, s, "two")) {
+            return Digit.two;
+        }
+        if (std.mem.startsWith(u8, s, "three")) {
+            return Digit.three;
+        }
+        if (std.mem.startsWith(u8, s, "four")) {
+            return Digit.four;
+        }
+        if (std.mem.startsWith(u8, s, "five")) {
+            return Digit.five;
+        }
+        if (std.mem.startsWith(u8, s, "six")) {
+            return Digit.six;
+        }
+        if (std.mem.startsWith(u8, s, "seven")) {
+            return Digit.seven;
+        }
+        if (std.mem.startsWith(u8, s, "eight")) {
+            return Digit.eight;
+        }
+        if (std.mem.startsWith(u8, s, "nine")) {
+            return Digit.nine;
+        }
+        return null;
     }
 };
 
@@ -39,10 +68,8 @@ fn isDigit(ch: u8) bool {
 }
 
 pub fn main() !void {
-    // var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    // defer _ = gpa.deinit();
-    // var file = try std.fs.cwd().openFile("input", .{}); // 54951
-    var file = try std.fs.cwd().openFile("easy_input_part_one", .{}); // 142
+    var file = try std.fs.cwd().openFile("input", .{}); // 54951, 55218
+    // var file = try std.fs.cwd().openFile("easy_input_part_one", .{}); // 142
     // var file = try std.fs.cwd().openFile("easy_input_part_two", .{}); // 209, 281
     defer file.close();
 
@@ -54,10 +81,14 @@ pub fn main() !void {
     var total: u32 = 0;
     while (try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
         var digits = std.ArrayList(Digit).init(allocator);
+        var i: u16 = 0;
         for (line) |char| {
             if (isDigit(char)) {
                 try digits.append(Digit.from_char(char));
+            } else if (Digit.from_written(line[i..])) |digit| {
+                try digits.append(digit);
             }
+            i += 1;
         }
 
         if (digits.items.len == 1) {
