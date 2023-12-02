@@ -93,12 +93,22 @@ impl Game {
 }
 
 fn main() {
-    let lines = read_lines("./easy_input_part_one").unwrap(); // 8
+    // let lines = read_lines("./easy_input_part_one").unwrap(); // 8
+    let lines = read_lines("./input").unwrap(); // 2369
+    let mut id_sum: u16 = 0;
 
-    for line in lines {
+    'outer: for line in lines {
         let line = line.unwrap();
-        println!("{line}");
         let game = Game::parse(&line);
-        println!("{game:?}");
+
+        for set in game.sets {
+            if set.red > Some(12) || set.green > Some(13) || set.blue > Some(14) {
+                continue 'outer;
+            }
+        }
+
+        id_sum += game.id as u16;
     }
+
+    println!("{id_sum}");
 }
