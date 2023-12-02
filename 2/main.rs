@@ -101,15 +101,33 @@ impl Game {
 }
 
 fn main() {
-    // let lines = read_lines("./easy_input_part_one").unwrap(); // 8
-    let lines = read_lines("./input").unwrap(); // 2369
+    // let lines = read_lines("./easy_input_part_one").unwrap(); // 8, 2286
+    let lines = read_lines("./input").unwrap(); // 2369, 66363
     let mut id_sum: u16 = 0;
+    let mut power_sum = 0;
 
     'outer: for line in lines {
         let line = line.unwrap();
         let game = Game::parse(&line);
 
-        for set in game.sets {
+        // part two
+        let biggest = game.sets.iter().fold((0, 0, 0), |(mut red, mut green, mut blue), curr| {
+            if curr.red > Some(red) {
+                red = curr.red.unwrap();
+            }
+            if curr.green > Some(green) {
+                green = curr.green.unwrap();
+            }
+            if curr.blue > Some(blue) {
+                blue = curr.blue.unwrap();
+            }
+            (red, green, blue)
+        });
+        let power = biggest.0 as u32 * biggest.1 as u32 * biggest.2 as u32;
+        power_sum += power;
+
+        // part one
+        for set in &game.sets {
             if set.red > Some(12) || set.green > Some(13) || set.blue > Some(14) {
                 continue 'outer;
             }
@@ -118,5 +136,6 @@ fn main() {
         id_sum += game.id as u16;
     }
 
-    println!("{id_sum}");
+    println!("part one: {id_sum}");
+    println!("part two: {power_sum}");
 }
