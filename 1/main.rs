@@ -30,7 +30,7 @@ fn is_digit(ch: u8) -> bool {
 #[derive(Copy, Clone, Debug)]
 enum Digit { One, Two, Three, Four, Five, Six, Seven, Eight, Nine }
 
-impl Digit {
+impl From<u8> for Digit {
     fn from(n: u8) -> Self {
         match n - 48 {
             1 => Self::One,
@@ -45,22 +45,28 @@ impl Digit {
             _ => panic!("this ain't no digit pal"),
         }
     }
+}
 
-    fn to_char(self) -> char {
-        match self {
-            Self::One => '1',
-            Self::Two => '2',
-            Self::Three => '3',
-            Self::Four => '4',
-            Self::Five => '5',
-            Self::Six => '6',
-            Self::Seven => '7',
-            Self::Eight => '8',
-            Self::Nine => '9',
+impl From<&Digit> for char {
+    fn from(digit: &Digit) -> Self {
+        match digit {
+            Digit::One => '1',
+            Digit::Two => '2',
+            Digit::Three => '3',
+            Digit::Four => '4',
+            Digit::Five => '5',
+            Digit::Six => '6',
+            Digit::Seven => '7',
+            Digit::Eight => '8',
+            Digit::Nine => '9',
         }
     }
+}
 
-    fn from_str(s: &str) -> Option<Self> {
+// can't implement From<&str> for Option<Digit>
+// `str` is not defined in the current crate
+impl Digit {
+    fn from_written(s: &str) -> Option<Self> {
         if s.starts_with("one") {
             Some(Self::One)
         } else if s.starts_with("two") {
@@ -91,8 +97,8 @@ struct DigitList(Vec<Digit>);
 impl DigitList {
     fn to_n(self) -> usize {
         let mut it = self.0.iter();
-        let first_digit = it.next().unwrap().to_char();
-        let last_digit = it.next_back().unwrap().to_char();
+        let first_digit = it.next().unwrap().into();
+        let last_digit = it.next_back().unwrap().into();
 
         let mut s = String::with_capacity(self.0.len());
         s.push(first_digit);
@@ -117,8 +123,7 @@ impl LineParser {
         for (i, ch) in self.line.bytes().enumerate() {
             if is_digit(ch) {
                 digits.0.push(Digit::from(ch));
-            } else if let Some(digit) = Digit::from_str(&self.line[i..]) {
-                // is written
+            } else if let Some(digit) = Digit::from_written(&self.line[i..]) {
                 digits.0.push(digit);
             }
         }
