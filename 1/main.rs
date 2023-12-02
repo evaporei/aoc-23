@@ -59,6 +59,30 @@ impl Digit {
             Self::Nine => '9',
         }
     }
+
+    fn from_str(s: &str) -> Option<Self> {
+        if s.starts_with("one") {
+            Some(Self::One)
+        } else if s.starts_with("two") {
+            Some(Self::Two)
+        } else if s.starts_with("three") {
+            Some(Self::Three)
+        } else if s.starts_with("four") {
+            Some(Self::Four)
+        } else if s.starts_with("five") {
+            Some(Self::Five)
+        } else if s.starts_with("six") {
+            Some(Self::Six)
+        } else if s.starts_with("seven") {
+            Some(Self::Seven)
+        } else if s.starts_with("eight") {
+            Some(Self::Eight)
+        } else if s.starts_with("nine") {
+            Some(Self::Nine)
+        } else {
+            None
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -90,9 +114,12 @@ impl LineParser {
 
     fn parse(self) -> usize {
         let mut digits = DigitList(vec![]);
-        for ch in self.line.bytes() {
+        for (i, ch) in self.line.bytes().enumerate() {
             if is_digit(ch) {
                 digits.0.push(Digit::from(ch));
+            } else if let Some(digit) = Digit::from_str(&self.line[i..]) {
+                // is written
+                digits.0.push(digit);
             }
         }
 
@@ -106,7 +133,9 @@ impl LineParser {
 
 fn main() {
     let parser = Parser::new();
-    let lines = read_lines("./easy_input_part_one").unwrap();
+    // let lines = read_lines("./easy_input_part_one").unwrap(); // 142
+    // let lines = read_lines("./easy_input_part_two").unwrap(); // 281
+    let lines = read_lines("./input").unwrap(); // 55218
     let sum = parser.parse(lines);
     println!("{sum}");
 }
