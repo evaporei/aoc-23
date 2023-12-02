@@ -10,15 +10,16 @@ const Digit = enum(u8) {
     seven,
     eight,
     nine,
-    fn from_char(ch: u8) Digit {
+
+    fn fromChar(ch: u8) Digit {
         return @enumFromInt(ch - 48);
     }
 
-    fn to_char(self: Digit) u8 {
+    fn toChar(self: Digit) u8 {
         return @intFromEnum(self) + 48;
     }
 
-    fn from_written(str: []const u8) ?Digit {
+    fn fromWritten(str: []const u8) ?Digit {
         inline for (@typeInfo(Digit).Enum.fields) |field| {
             if (std.mem.startsWith(u8, str, field.name))
                 return @enumFromInt(field.value);
@@ -50,8 +51,8 @@ pub fn main() !void {
         var i: u16 = 0;
         for (line) |char| {
             if (isDigit(char)) {
-                try digits.append(Digit.from_char(char));
-            } else if (Digit.from_written(line[i..])) |digit| {
+                try digits.append(Digit.fromChar(char));
+            } else if (Digit.fromWritten(line[i..])) |digit| {
                 try digits.append(digit);
             }
             i += 1;
@@ -62,8 +63,8 @@ pub fn main() !void {
         }
 
         var s = [_]u8{ 'h', 'e' };
-        s[0] = digits.items[0].to_char();
-        s[1] = digits.items[digits.items.len - 1].to_char();
+        s[0] = digits.items[0].toChar();
+        s[1] = digits.items[digits.items.len - 1].toChar();
 
         // std.debug.print("n: {d}\n", .{n});
 
