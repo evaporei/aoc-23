@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{self, BufRead};
 
 fn is_digit(ch: u8) -> bool {
-    ch >= 49 && ch <= 57
+    ch >= 48 && ch <= 57
 }
 
 fn is_symbol(ch: u8) -> bool {
@@ -62,8 +62,8 @@ fn has_symbol_next_line(next: &Option<&String>, pos: Pos, n_digits: usize) -> bo
 }
 
 fn main() {
-    let filename = "./easy_input_part_one"; // 4361
-    // let filename = "./input"; // 422951 (too low)
+    // let filename = "./easy_input_part_one"; // 4361
+    let filename = "./input"; // 520019
     let file = File::open(filename).unwrap();
     let file2 = File::open(filename).unwrap();
     let curr = io::BufReader::new(&file).lines();
