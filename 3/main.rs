@@ -30,9 +30,26 @@ fn has_symbol_prev_line(prev: &Option<String>, pos: Pos, n_digits: usize) -> boo
         Some(prev) => prev,
         None => return false,
     };
-    for p in 0..n_digits + 1 {
-        if let Some(prev_pos) = pos.1.checked_sub(n_digits) {
-            if let Some(ch) = prev.chars().nth(prev_pos + p) {
+    for p in 0..n_digits + 2 {
+        if let Some(prev_pos) = (pos.1 + p).checked_sub(n_digits) {
+            if let Some(ch) = prev.chars().nth(prev_pos) {
+                if is_symbol(ch as u8) {
+                    return true;
+                }
+            }
+        }
+    }
+    false
+}
+
+fn has_symbol_next_line(next: &Option<&String>, pos: Pos, n_digits: usize) -> bool {
+    let next = match next {
+        Some(next) => next,
+        None => return false,
+    };
+    for p in 0..n_digits + 2 {
+        if let Some(next_pos) = (pos.1 + p).checked_sub(n_digits) {
+            if let Some(ch) = next.chars().nth(next_pos) {
                 if is_symbol(ch as u8) {
                     return true;
                 }
@@ -44,13 +61,14 @@ fn has_symbol_prev_line(prev: &Option<String>, pos: Pos, n_digits: usize) -> boo
 
 fn main() {
     let filename = "./easy_input_part_one"; // 4361
-    // let filename = "./input";
+    // let filename = "./input"; // 389379 (too low)
     let file = File::open(filename).unwrap();
+    let file2 = File::open(filename).unwrap();
     let curr = io::BufReader::new(&file).lines();
+    let mut next_it = io::BufReader::new(&file2).lines().skip(1);
 
-    let mut peek = curr.enumerate().peekable();
     let mut prev = None;
-    let mut next = peek.peek();
+    let mut next = next_it.next();
 
     // max number of digits = 3
     let mut str_n = String::with_capacity(3);
@@ -68,13 +86,13 @@ fn main() {
     // (1,5-3)->(1,2)
     // (1,5+1)->(1,6)
     // prev line: (OK?!)
-    // for p in (0..n_digits+1):
+    // for p in (0..n_digits+2):
     //   (1-1,5-3+p)->(0,2~6)
-    // next line:
-    // for p in (0..n_digits+1):
+    // next line: (OK?!)
+    // for p in (0..n_digits+2):
     //   (1+1,5-3+p)->(2,2~6)
 
-    while let Some((i, line)) = peek.next() {
+    for (i, line) in curr.enumerate() {
         let line = line.unwrap();
         for (j, cell) in line.bytes().enumerate() {
             if is_digit(cell) {
@@ -84,16 +102,19 @@ fn main() {
                 n = str_n.parse().unwrap();
                 let n_digits = str_n.len();
                 str_n = "".to_owned();
-                println!("({},{}) {}", n_pos.0, n_pos.1, n);
-                println!("prev {}", has_symbol_prev_line(&prev, n_pos, n_digits));
+                // println!("({},{}) {}", n_pos.0, n_pos.1, n);
+                // println!("curr {}", has_symbol_same_line(&line, n_pos, n_digits));
+                // println!("prev {}", has_symbol_prev_line(&prev, n_pos, n_digits));
+                // println!("next {}", has_symbol_next_line(&next.as_ref().map(|n| n.as_ref().unwrap()), n_pos, n_digits));
                 if has_symbol_same_line(&line, n_pos, n_digits) ||
-                   has_symbol_prev_line(&prev, n_pos, n_digits) {
+                   has_symbol_prev_line(&prev, n_pos, n_digits) ||
+                   has_symbol_next_line(&next.as_ref().map(|n| n.as_ref().unwrap()), n_pos, n_digits) {
                     total += n as u32;
                 }
             }
         }
         prev = Some(line);
-        next = peek.peek();
+        next = next_it.next();
     }
 
     println!("{total}");
