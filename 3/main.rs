@@ -15,7 +15,9 @@ fn has_symbol_same_line(curr_line: &str, pos: Pos, n_digits: usize) -> bool {
     // prev
     if let Some(prev_pos) = pos.1.checked_sub(n_digits) {
         if let Some(ch) = curr_line.chars().nth(prev_pos) {
-            return is_symbol(ch as u8);
+            if is_symbol(ch as u8) {
+                return true;
+            }
         }
     }
     // next
@@ -61,7 +63,7 @@ fn has_symbol_next_line(next: &Option<&String>, pos: Pos, n_digits: usize) -> bo
 
 fn main() {
     let filename = "./easy_input_part_one"; // 4361
-    // let filename = "./input"; // 389379 (too low)
+    // let filename = "./input"; // 422951 (too low)
     let file = File::open(filename).unwrap();
     let file2 = File::open(filename).unwrap();
     let curr = io::BufReader::new(&file).lines();
