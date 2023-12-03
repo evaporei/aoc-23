@@ -13,17 +13,31 @@ type Pos = (usize, usize);
 
 fn has_symbol_same_line(curr_line: &str, pos: Pos, n_digits: usize) -> bool {
     // prev
-    match pos.1.checked_sub(n_digits) {
-        Some(prev_pos) => {
-            if let Some(ch) = curr_line.chars().nth(prev_pos) {
-                return is_symbol(ch as u8);
-            }
-        },
-        None => {},
-    };
+    if let Some(prev_pos) = pos.1.checked_sub(n_digits) {
+        if let Some(ch) = curr_line.chars().nth(prev_pos) {
+            return is_symbol(ch as u8);
+        }
+    }
     // next
     if let Some(ch) = curr_line.chars().nth(pos.1 + 1) {
         return is_symbol(ch as u8);
+    }
+    false
+}
+
+fn has_symbol_prev_line(prev: &Option<String>, pos: Pos, n_digits: usize) -> bool {
+    let prev = match prev {
+        Some(prev) => prev,
+        None => return false,
+    };
+    for p in 0..n_digits + 1 {
+        if let Some(prev_pos) = pos.1.checked_sub(n_digits) {
+            if let Some(ch) = prev.chars().nth(prev_pos + p) {
+                if is_symbol(ch as u8) {
+                    return true;
+                }
+            }
+        }
     }
     false
 }
@@ -53,7 +67,7 @@ fn main() {
     // same line: (OK?!)
     // (1,5-3)->(1,2)
     // (1,5+1)->(1,6)
-    // prev line:
+    // prev line: (OK?!)
     // for p in (0..n_digits+1):
     //   (1-1,5-3+p)->(0,2~6)
     // next line:
@@ -71,7 +85,9 @@ fn main() {
                 let n_digits = str_n.len();
                 str_n = "".to_owned();
                 println!("({},{}) {}", n_pos.0, n_pos.1, n);
-                if has_symbol_same_line(&line, n_pos, n_digits) {
+                println!("prev {}", has_symbol_prev_line(&prev, n_pos, n_digits));
+                if has_symbol_same_line(&line, n_pos, n_digits) ||
+                   has_symbol_prev_line(&prev, n_pos, n_digits) {
                     total += n as u32;
                 }
             }
