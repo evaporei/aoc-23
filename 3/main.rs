@@ -251,17 +251,17 @@ fn main() {
         let line = line.unwrap();
         for (j, cell) in line.bytes().enumerate() {
             if is_asterisk(cell) {
-                let ast_pos = dbg!((i, j));
+                let ast_pos = (i, j);
                 // println!("({},{})", ast_pos.0, ast_pos.1);
                 let cur = has_digit_same_line(&line, ast_pos);
                 let pre = has_digit_prev_line(&prev, ast_pos);
                 let nxt = has_digit_next_line(&next.as_ref().map(|n| n.as_ref().unwrap()), ast_pos);
-                println!("curr {:?}", cur);
-                println!("prev {:?}", pre);
-                println!("next {:?}", nxt);
+                // println!("curr {:?}", cur);
+                // println!("prev {:?}", pre);
+                // println!("next {:?}", nxt);
                 let mut ratios = vec![];
                 if cur.len() == 2 {
-                    println!("cur = 2");
+                    // println!("cur = 2");
                     // find
                     if let Some(found) = numbers.get(cur[0].0, cur[0].1) {
                         ratios.push(found as u32);
@@ -270,7 +270,7 @@ fn main() {
                         ratios.push(found as u32);
                     }
                 } else if cur.len() == 1 {
-                    println!("cur = 1");
+                    // println!("cur = 1");
                     if let Some(found) = numbers.get(cur[0].0, cur[0].1) {
                         ratios.push(found as u32);
                     }
@@ -278,13 +278,13 @@ fn main() {
 
                 // it's one number w/ three digits
                 if pre.len() == 3 {
-                    println!("pre = 3");
+                    // println!("pre = 3");
                     // we could directly parse here
                     if let Some(found) = numbers.get(pre[2].0, pre[2].1) {
                         ratios.push(found as u32);
                     }
                 } else if pre.len() == 2 {
-                    println!("pre = 2");
+                    // println!("pre = 2");
                     // together?
                     if pre[1].0.1 - pre[0].0.1 == 1 {
                         if let Some(found) = numbers.get(pre[1].0, pre[1].1) {
@@ -306,13 +306,13 @@ fn main() {
 
                 // it's one number w/ three digits
                 if nxt.len() == 3 {
-                    println!("nxt = 3");
+                    // println!("nxt = 3");
                     // we could directly parse here
                     if let Some(found) = numbers.get(nxt[2].0, nxt[2].1) {
                         ratios.push(found as u32);
                     }
                 } else if nxt.len() == 2 {
-                    println!("nxt = 2");
+                    // println!("nxt = 2");
                     // together?
                     if nxt[1].0.1 - nxt[0].0.1 == 1 {
                         if let Some(found) = numbers.get(nxt[1].0, nxt[1].1) {
@@ -327,7 +327,7 @@ fn main() {
                         }
                     }
                 } else if nxt.len() == 1 {
-                    println!("nxt = 1");
+                    // println!("nxt = 1");
                     if let Some(found) = numbers.get(nxt[0].0, nxt[0].1) {
                         ratios.push(found as u32);
                     }
@@ -337,7 +337,7 @@ fn main() {
                     if ratios.len() == 2 {
                         let mut f = 1;
                         for ratio in ratios {
-                            println!("f o i");
+                            // println!("f o i");
                             f *= ratio;
                         }
                         total2 += f;
