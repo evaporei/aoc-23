@@ -170,8 +170,8 @@ impl Numbers {
 }
 
 fn main() {
-    let filename = "./easy_input_part_one"; // 4361, 467835
-    // let filename = "./input"; // 520_019, 44_997_877 (too low), 67_869_269 (too low)
+    // let filename = "./easy_input_part_one"; // 4361, 467835
+    let filename = "./input"; // 520_019, 44_997_877 (too low), 67_869_269 (too low?)
     let file = File::open(filename).unwrap();
     let file2 = File::open(filename).unwrap();
     let curr = io::BufReader::new(&file).lines();
@@ -251,7 +251,6 @@ fn main() {
         let line = line.unwrap();
         for (j, cell) in line.bytes().enumerate() {
             if is_asterisk(cell) {
-                let mut ratio: u32 = 1;
                 let ast_pos = dbg!((i, j));
                 // println!("({},{})", ast_pos.0, ast_pos.1);
                 let cur = has_digit_same_line(&line, ast_pos);
@@ -260,19 +259,20 @@ fn main() {
                 println!("curr {:?}", cur);
                 println!("prev {:?}", pre);
                 println!("next {:?}", nxt);
+                let mut ratios = vec![];
                 if cur.len() == 2 {
                     println!("cur = 2");
                     // find
                     if let Some(found) = numbers.get(cur[0].0, cur[0].1) {
-                        ratio *= dbg!(found as u32);
+                        ratios.push(found as u32);
                     }
                     if let Some(found) = numbers.get(cur[1].0, cur[1].1) {
-                        ratio *= dbg!(found as u32);
+                        ratios.push(found as u32);
                     }
                 } else if cur.len() == 1 {
                     println!("cur = 1");
                     if let Some(found) = numbers.get(cur[0].0, cur[0].1) {
-                        ratio *= dbg!(found as u32);
+                        ratios.push(found as u32);
                     }
                 }
 
@@ -281,26 +281,26 @@ fn main() {
                     println!("pre = 3");
                     // we could directly parse here
                     if let Some(found) = numbers.get(pre[2].0, pre[2].1) {
-                        ratio *= dbg!(found as u32);
+                        ratios.push(found as u32);
                     }
                 } else if pre.len() == 2 {
                     println!("pre = 2");
                     // together?
                     if pre[1].0.1 - pre[0].0.1 == 1 {
                         if let Some(found) = numbers.get(pre[1].0, pre[1].1) {
-                            ratio *= dbg!(found as u32);
+                            ratios.push(found as u32);
                         }
                     } else {
                         if let Some(found) = numbers.get(pre[0].0, pre[0].1) {
-                            ratio *= dbg!(found as u32);
+                            ratios.push(found as u32);
                         }
                         if let Some(found) = numbers.get(pre[1].0, pre[1].1) {
-                            ratio *= dbg!(found as u32);
+                            ratios.push(found as u32);
                         }
                     }
                 } else if pre.len() == 1 {
                     if let Some(found) = numbers.get(pre[0].0, pre[0].1) {
-                        ratio *= dbg!(found as u32);
+                        ratios.push(found as u32);
                     }
                 }
 
@@ -309,34 +309,38 @@ fn main() {
                     println!("nxt = 3");
                     // we could directly parse here
                     if let Some(found) = numbers.get(nxt[2].0, nxt[2].1) {
-                        ratio *= dbg!(found as u32);
+                        ratios.push(found as u32);
                     }
                 } else if nxt.len() == 2 {
                     println!("nxt = 2");
                     // together?
                     if nxt[1].0.1 - nxt[0].0.1 == 1 {
                         if let Some(found) = numbers.get(nxt[1].0, nxt[1].1) {
-                            ratio *= dbg!(found as u32);
+                            ratios.push(found as u32);
                         }
                     } else {
                         if let Some(found) = numbers.get(nxt[0].0, nxt[0].1) {
-                            ratio *= dbg!(found as u32);
+                            ratios.push(found as u32);
                         }
                         if let Some(found) = numbers.get(nxt[1].0, nxt[1].1) {
-                            ratio *= dbg!(found as u32);
+                            ratios.push(found as u32);
                         }
                     }
                 } else if nxt.len() == 1 {
                     println!("nxt = 1");
                     if let Some(found) = numbers.get(nxt[0].0, nxt[0].1) {
-                        ratio *= dbg!(found as u32);
+                        ratios.push(found as u32);
                     }
                 }
                 // at least two
                 if (!cur.is_empty() && !pre.is_empty()) || (!cur.is_empty() && !nxt.is_empty()) || (!pre.is_empty() && !nxt.is_empty()) {
-                    if ratio != 1 {
-                        println!("f o i");
-                        total2 += ratio as u32;
+                    if ratios.len() == 2 {
+                        let mut f = 1;
+                        for ratio in ratios {
+                            println!("f o i");
+                            f *= ratio;
+                        }
+                        total2 += f;
                     }
                 }
             }
