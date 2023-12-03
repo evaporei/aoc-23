@@ -65,59 +65,98 @@ fn has_symbol_next_line(next: &Option<&String>, pos: Pos, n_digits: usize) -> bo
     false
 }
 
-fn has_digit_same_line(curr_line: &str, pos: Pos) -> bool {
+fn has_digit_same_line(curr_line: &str, pos: Pos) -> Option<(Pos, char)> {
     // prev
     if let Some(prev_pos) = pos.1.checked_sub(1) {
         if let Some(ch) = curr_line.chars().nth(prev_pos) {
             if is_digit(ch as u8) {
-                return true;
+                return Some(((pos.0, pos.1 - 1), ch));
             }
         }
     }
     // next
     if let Some(ch) = curr_line.chars().nth(pos.1 + 1) {
-        return is_digit(ch as u8);
+        if is_digit(ch as u8) {
+            return Some(((pos.0, pos.1 + 1), ch));
+        }
     }
-    false
+    None
 }
 
-fn has_digit_prev_line(prev: &Option<String>, pos: Pos) -> bool {
+fn has_digit_prev_line(prev: &Option<String>, pos: Pos) -> Option<(Pos, char)> {
     let prev = match prev {
         Some(prev) => prev,
-        None => return false,
+        None => return None,
     };
     for p in 0..1 + 2 {
-        if let Some(prev_pos) = (pos.1 + p).checked_sub(1) {
+        if let Some(prev_pos) = (pos.1 + (p)).checked_sub(1) {
             if let Some(ch) = prev.chars().nth(prev_pos) {
                 if is_digit(ch as u8) {
-                    return true;
+                    return Some(((pos.0 - 1, pos.1 + p - 1), ch));
                 }
             }
         }
     }
-    false
+    None
 }
 
-fn has_digit_next_line(next: &Option<&String>, pos: Pos) -> bool {
+fn has_digit_next_line(next: &Option<&String>, pos: Pos) -> Option<(Pos, char)> {
     let next = match next {
         Some(next) => next,
-        None => return false,
+        None => return None,
     };
     for p in 0..1 + 2 {
         if let Some(next_pos) = (pos.1 + p).checked_sub(1) {
             if let Some(ch) = next.chars().nth(next_pos) {
                 if is_digit(ch as u8) {
-                    return true;
+                    return Some(((pos.0 + 1, pos.1 + p - 1), ch));
                 }
             }
         }
     }
-    false
+    None
+}
+
+type Data = (Pos, u16, String);
+
+#[derive(Debug)]
+struct Numbers {
+    data: Vec<Data>,
+}
+
+impl Numbers {
+    fn new() -> Self {
+        Self { data: Vec::new() }
+    }
+
+    fn insert(&mut self, pos: Pos, n: u16, n_str: String) {
+        self.data.push((pos, n, n_str));
+    }
+
+    fn get(&self, may_pos: Pos, ch: char) -> Option<u16> {
+        self.data.iter().find(|(pos, _, n_str)| {
+            // should be in the same line
+            if pos.0 != may_pos.0 {
+                return false;
+            }
+
+            if let Some(res) = pos.1.checked_sub(may_pos.1) {
+                // try to check if character in str version
+                // matches w/ the one in the position received
+                let c = n_str.chars().rev().nth(res);
+                return c == Some(ch)
+            }
+
+            false
+        })
+        .map(|(_, n, _)| n)
+        .copied()
+    }
 }
 
 fn main() {
     let filename = "./easy_input_part_one"; // 4361, 467835
-    // let filename = "./input"; // 520019
+    // let filename = "./input"; // 520_019, 44_997_877 (too low), 67_869_269 (too low)
     let file = File::open(filename).unwrap();
     let file2 = File::open(filename).unwrap();
     let curr = io::BufReader::new(&file).lines();
@@ -132,7 +171,8 @@ fn main() {
     let mut n_pos: Pos = (0, 0);
     let mut n: u16;
     let mut total: u32 = 0;
-    let mut total2: u32 = 0;
+
+    let mut numbers = Numbers::new();
 
     // .........
     // ...456...
@@ -149,16 +189,17 @@ fn main() {
     // for p in (0..n_digits+2):
     //   (1+1,5-3+p)->(2,2~6)
 
+    // part one
     for (i, line) in curr.enumerate() {
         let line = line.unwrap();
         for (j, cell) in line.bytes().enumerate() {
-            // part one
             if is_digit(cell) {
                 str_n.push(cell as char);
                 n_pos = (i, j);
             } else if !str_n.is_empty() {
                 n = str_n.parse().unwrap();
                 let n_digits = str_n.len();
+                numbers.insert(n_pos, n, str_n);
                 str_n = "".to_owned();
                 // println!("({},{}) {}", n_pos.0, n_pos.1, n);
                 // println!("curr {}", has_symbol_same_line(&line, n_pos, n_digits));
@@ -171,21 +212,60 @@ fn main() {
                 }
             }
 
-            // part two
+        }
+        prev = Some(line);
+        next = next_it.next();
+    }
+
+    // dbg!(&numbers);
+
+    println!("part one {total}");
+
+    // yeah this is ugly, 4 file descriptiors...
+    let file3 = File::open(filename).unwrap();
+    let file4 = File::open(filename).unwrap();
+    let curr = io::BufReader::new(&file3).lines();
+    let mut next_it = io::BufReader::new(&file4).lines().skip(1);
+
+    let mut prev = None;
+    let mut next = next_it.next();
+    let mut total2: u32 = 0;
+
+    // part two
+    for (i, line) in curr.enumerate() {
+        let line = line.unwrap();
+        for (j, cell) in line.bytes().enumerate() {
             if is_asterisk(cell) {
+                let mut ratio: u32 = 1;
                 let ast_pos = (i, j);
                 // println!("({},{})", ast_pos.0, ast_pos.1);
                 let cur = has_digit_same_line(&line, ast_pos);
                 let pre = has_digit_prev_line(&prev, ast_pos);
                 let nxt = has_digit_next_line(&next.as_ref().map(|n| n.as_ref().unwrap()), ast_pos);
-                // println!("curr {}", cur);
-                // println!("prev {}", pre);
-                // println!("next {}", nxt);
+                // println!("curr {:?}", cur);
+                // println!("prev {:?}", pre);
+                // println!("next {:?}", nxt);
+                if let Some((pos, ch)) = cur {
+                    if let Some(found) = numbers.get(pos, ch) {
+                        ratio *= found as u32;
+                    }
+                }
+                if let Some((pos, ch)) = pre {
+                    if let Some(found) = numbers.get(pos, ch) {
+                        ratio *= found as u32;
+                    }
+                }
+                if let Some((pos, ch)) = nxt {
+                    if let Some(found) = numbers.get(pos, ch) {
+                        ratio *= found as u32;
+                    }
+                }
                 // at least two
-                if (cur && pre) || (cur && nxt) || (pre && nxt) {
-                    // I'll have to parse the numbers ;-;
-                    // total2 *= n as u32;
-                    println!("BOOM");
+                if (cur.is_some() && pre.is_some()) || (cur.is_some() && nxt.is_some()) || (pre.is_some() && nxt.is_some()) {
+
+                    if ratio != 1 {
+                        total2 += ratio as u32;
+                    }
                 }
             }
         }
@@ -193,5 +273,5 @@ fn main() {
         next = next_it.next();
     }
 
-    println!("{total}");
+    println!("part two {total2}");
 }
