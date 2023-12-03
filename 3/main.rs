@@ -33,8 +33,10 @@ fn main() {
     // let filename = "./input";
     let file = File::open(filename).unwrap();
     let curr = io::BufReader::new(&file).lines();
-    let mut prev = io::BufReader::new(&file).lines().into_iter();
-    let mut next = io::BufReader::new(&file).lines().into_iter().skip(1);
+
+    let mut peek = curr.enumerate().peekable();
+    let mut prev = None;
+    let mut next = peek.peek();
 
     // max number of digits = 3
     let mut str_n = String::with_capacity(3);
@@ -58,7 +60,7 @@ fn main() {
     // for p in (0..n_digits+1):
     //   (1+1,5-3+p)->(2,2~6)
 
-    for (i, line) in curr.enumerate() {
+    while let Some((i, line)) = peek.next() {
         let line = line.unwrap();
         for (j, cell) in line.bytes().enumerate() {
             if is_digit(cell) {
@@ -74,10 +76,8 @@ fn main() {
                 }
             }
         }
-        if i != 0 {
-            prev.next();
-        }
-        next.next();
+        prev = Some(line);
+        next = peek.peek();
     }
 
     println!("{total}");
