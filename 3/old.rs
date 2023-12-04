@@ -228,6 +228,21 @@ fn main() {
             }
 
         }
+        if !str_n.is_empty() {
+            n = str_n.parse().unwrap();
+            let n_digits = str_n.len();
+            // println!("({},{}) {}", n_pos.0, n_pos.1, n);
+            // println!("curr {}", has_symbol_same_line(&line, n_pos, n_digits));
+            // println!("prev {}", has_symbol_prev_line(&prev, n_pos, n_digits));
+            // println!("next {}", has_symbol_next_line(&next.as_ref().map(|n| n.as_ref().unwrap()), n_pos, n_digits));
+            if has_symbol_same_line(&line, n_pos, n_digits) ||
+                has_symbol_prev_line(&prev, n_pos, n_digits) ||
+                    has_symbol_next_line(&next.as_ref().map(|n| n.as_ref().unwrap()), n_pos, n_digits) {
+                        numbers.insert(n_pos, n, str_n);
+                        total += n as u32;
+                    }
+            str_n = "".to_owned();
+        }
         prev = Some(line);
         next = next_it.next();
     }
