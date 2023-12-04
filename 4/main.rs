@@ -96,11 +96,8 @@ fn main() {
         let curr_qtd = card_map.get(&card.id).unwrap();
         for _ in 0..*curr_qtd {
             for i in card.id + 1..=(*len as u16 + card.id) {
-                // no past end of the table
-                if card_map.contains_key(&i) {
-                    card_map.entry(i)
-                        .and_modify(|c| { *c += 1 });
-                }
+                card_map.entry(i)
+                    .and_modify(|c| { *c += 1 });
             }
         }
     }
