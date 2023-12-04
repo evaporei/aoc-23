@@ -93,12 +93,10 @@ fn main() {
             points += 1 << l;
         }
 
-        let curr_qtd = card_map.get(&card.id).unwrap();
-        for _ in 0..*curr_qtd {
-            for i in card.id + 1..=(*len as u16 + card.id) {
-                card_map.entry(i)
-                    .and_modify(|c| { *c += 1 });
-            }
+        let curr_qtd = *card_map.get(&card.id).unwrap();
+        for i in card.id + 1..=(*len as u16 + card.id) {
+            card_map.entry(i)
+                .and_modify(|c| { *c += curr_qtd });
         }
     }
 
