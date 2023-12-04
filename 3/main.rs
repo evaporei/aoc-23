@@ -37,13 +37,7 @@ struct Symbol {
 
 impl Symbol {
     fn is_valid_part_number(&self, n: Number) -> bool {
-        // for i in self.pos.1 - 1..self.pos.1 + 2 {
-        //     for j in n.pos.1 - n.digits..n.pos.1 {
-        //         if i == j {
-        //             return true;
-        //         }
-        //     }
-        // }
+        // .*. => -1 0 1
         for i in self.col - 1..self.col + 2 {
             for j in n.start..n.end {
                 if i == j {
@@ -121,11 +115,15 @@ fn main() {
     let mut parts = vec![];
 
     for (i, symbols) in s_matrix.iter().enumerate() {
+        // line before
         let start = if i == 0 { 0 } else { i - 1 };
+        // line after
         let end = if i == s_matrix.len() - 1 { i + 1 } else { i + 2 };
         for symbol in symbols {
             let mut valid_numbers = vec![];
+            // for each of the three lines (prev, curr, next)
             for j in start..end {
+                // numbers in the same line
                 for number in &n_matrix[j] {
                     if symbol.is_valid_part_number(*number) {
                         valid_numbers.push(number.value);
