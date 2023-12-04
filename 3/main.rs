@@ -13,142 +13,148 @@ fn is_asterisk(ch: u8) -> bool {
     ch == b'*'
 }
 
+fn is_dot(ch: u8) -> bool {
+    ch == b'.'
+}
+
 type Pos = (usize, usize);
 
-fn has_symbol_same_line(curr_line: &str, pos: Pos, n_digits: usize) -> bool {
-    // prev
-    if let Some(prev_pos) = pos.1.checked_sub(n_digits) {
-        if let Some(ch) = curr_line.chars().nth(prev_pos) {
-            if is_symbol(ch as u8) {
-                return true;
-            }
-        }
-    }
-    // next
-    if let Some(ch) = curr_line.chars().nth(pos.1 + 1) {
-        return is_symbol(ch as u8);
-    }
-    false
+#[derive(Copy, Clone)]
+struct Number {
+    value: u32,
+    // pos: Pos,
+    start: usize,
+    end: usize,
+    digits: usize,
 }
 
-fn has_symbol_prev_line(prev: &Option<String>, pos: Pos, n_digits: usize) -> bool {
-    let prev = match prev {
-        Some(prev) => prev,
-        None => return false,
-    };
-    for p in 0..n_digits + 2 {
-        if let Some(prev_pos) = (pos.1 + p).checked_sub(n_digits) {
-            if let Some(ch) = prev.chars().nth(prev_pos) {
-                if is_symbol(ch as u8) {
+#[derive(Copy, Clone, Debug)]
+struct Symbol {
+    value: u8, // char
+    col: usize,
+    // pos: Pos,
+}
+
+impl Symbol {
+    fn is_valid_part_number(&self, n: Number) -> bool {
+        // for i in self.pos.1 - 1..self.pos.1 + 2 {
+        //     for j in n.pos.1 - n.digits..n.pos.1 {
+        //         if i == j {
+        //             return true;
+        //         }
+        //     }
+        // }
+        for i in self.col - 1..self.col + 2 {
+            for j in n.start..n.end {
+                if i == j {
                     return true;
                 }
             }
         }
+        false
     }
-    false
 }
 
-fn has_symbol_next_line(next: &Option<&String>, pos: Pos, n_digits: usize) -> bool {
-    let next = match next {
-        Some(next) => next,
-        None => return false,
-    };
-    for p in 0..n_digits + 2 {
-        if let Some(next_pos) = (pos.1 + p).checked_sub(n_digits) {
-            if let Some(ch) = next.chars().nth(next_pos) {
-                if is_symbol(ch as u8) {
-                    return true;
-                }
-            }
-        }
-    }
-    false
+#[derive(Debug)]
+struct Part {
+    symbol: Symbol,
+    numbers: Vec<u32>,
 }
 
 fn main() {
     // let filename = "./easy_input_part_one"; // 4361, 467835
-    let filename = "./input"; // 520_019, 44_997_877 (too low), 67_869_269 (too low?)
+    let filename = "./input"; // 520_019, 44_997_877 (too low), 67_869_269 (too low), 75477702 (still wrong ;-;), 75519888 (FINALLY CORRECT)
     let file = File::open(filename).unwrap();
-    let file2 = File::open(filename).unwrap();
     let curr = io::BufReader::new(&file).lines();
-    let mut next_it = io::BufReader::new(&file2).lines().skip(1);
-
-    let mut prev = None;
-    let mut next = next_it.next();
 
     // max number of digits = 3
     let mut str_n = String::with_capacity(3);
     // i, j (j == last digit of number)
-    let mut n_pos: Pos = (0, 0);
-    let mut n: u16;
-    let mut total: u32 = 0;
+    // let mut n_pos: Pos = (0, 0);
+    let mut n: u32;
 
-    // .........
-    // ...456...
-    // .........
-    // (1,5)
-    // n_digits = 3
-    // same line: (OK?!)
-    // (1,5-3)->(1,2)
-    // (1,5+1)->(1,6)
-    // prev line: (OK?!)
-    // for p in (0..n_digits+2):
-    //   (1-1,5-3+p)->(0,2~6)
-    // next line: (OK?!)
-    // for p in (0..n_digits+2):
-    //   (1+1,5-3+p)->(2,2~6)
+    let mut n_matrix = vec![];
+    let mut s_matrix = vec![];
 
-    // part one
-    for (i, line) in curr.enumerate() {
+    for (_i, line) in curr.enumerate() {
         let line = line.unwrap();
+        let mut numbers = vec![];
+        let mut symbols = vec![];
+        let mut start = 0;
+        let mut first_digit = true;
         for (j, cell) in line.bytes().enumerate() {
             if is_digit(cell) {
+                if first_digit {
+                    first_digit = false;
+                    start = j;
+                }
                 str_n.push(cell as char);
-                n_pos = (i, j);
+                // n_pos = (i, j);
+                continue;
             } else if !str_n.is_empty() {
                 n = str_n.parse().unwrap();
                 let n_digits = str_n.len();
-                // println!("({},{}) {}", n_pos.0, n_pos.1, n);
-                // println!("curr {}", has_symbol_same_line(&line, n_pos, n_digits));
-                // println!("prev {}", has_symbol_prev_line(&prev, n_pos, n_digits));
-                // println!("next {}", has_symbol_next_line(&next.as_ref().map(|n| n.as_ref().unwrap()), n_pos, n_digits));
-                if has_symbol_same_line(&line, n_pos, n_digits) ||
-                   has_symbol_prev_line(&prev, n_pos, n_digits) ||
-                   has_symbol_next_line(&next.as_ref().map(|n| n.as_ref().unwrap()), n_pos, n_digits) {
-                    total += n as u32;
-                }
+                // numbers.push(Number { value: n, pos: n_pos, digits: n_digits });
+                numbers.push(Number { value: n, start, end: j, digits: n_digits });
                 str_n = "".to_owned();
+                first_digit = true;
             }
 
+            if !is_dot(cell) {
+                // symbols.push(Symbol { value: cell, pos: (i, j) });
+                symbols.push(Symbol { value: cell, col: j });
+            }
         }
-        prev = Some(line);
-        next = next_it.next();
+
+        if !str_n.is_empty() {
+            n = str_n.parse().unwrap();
+            let n_digits = str_n.len();
+            // numbers.push(Number { value: n, pos: n_pos, digits: n_digits });
+            numbers.push(Number { value: n, start, end: line.bytes().len(), digits: n_digits });
+            str_n = "".to_owned();
+        }
+
+        n_matrix.push(numbers);
+        s_matrix.push(symbols);
+    }
+
+    let mut parts = vec![];
+
+    for (i, symbols) in s_matrix.iter().enumerate() {
+        let start = if i == 0 { 0 } else { i - 1 };
+        let end = if i == s_matrix.len() - 1 { i + 1 } else { i + 2 };
+        for symbol in symbols {
+            let mut valid_numbers = vec![];
+            for j in start..end {
+                for number in &n_matrix[j] {
+                    if symbol.is_valid_part_number(*number) {
+                        valid_numbers.push(number.value);
+                    }
+                }
+            }
+            parts.push(Part { symbol: *symbol, numbers: valid_numbers });
+        }
     }
 
     // dbg!(&numbers);
 
+    let mut total: u32 = 0;
+    for part in &parts {
+        for n in &part.numbers {
+            total += *n;
+        }
+    }
+
     println!("part one {total}");
 
-    // yeah this is ugly, 4 file descriptiors...
-    let file3 = File::open(filename).unwrap();
-    let file4 = File::open(filename).unwrap();
-    let curr = io::BufReader::new(&file3).lines();
-    let mut next_it = io::BufReader::new(&file4).lines().skip(1);
-
-    let mut prev = None;
-    let mut next = next_it.next();
     let mut total2: u32 = 0;
-
-    // part two
-    for (i, line) in curr.enumerate() {
-        let line = line.unwrap();
-        for (j, cell) in line.bytes().enumerate() {
-            if is_asterisk(cell) {
-            }
+    for part in &parts {
+        if is_asterisk(part.symbol.value) && part.numbers.len() == 2 {
+            total2 += part.numbers[0] * part.numbers[1];
         }
-        prev = Some(line);
-        next = next_it.next();
     }
+
+    // dbg!(parts);
 
     println!("part two {total2}");
 }
