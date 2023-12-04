@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, BTreeMap};
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
@@ -64,9 +64,12 @@ impl Card {
 
 fn main() {
     // let lines = read_lines("./easy_input_part_one").unwrap(); // 13
-    let lines = read_lines("./input").unwrap(); // 32609
+    let lines = read_lines("./input").unwrap(); // 32609, 14624680
     let mut points = 0;
     let mut lens = vec![];
+    let mut n_of_cards = 0;
+    let mut card_map = BTreeMap::new();
+    let mut cards = vec![];
 
     for line in lines {
         let line = line.unwrap();
@@ -79,13 +82,33 @@ fn main() {
             .collect();
 
         lens.push(intersection.len());
+
+        card_map.insert(card.id, 1);
+
+        cards.push(card);
     }
 
-    for len in lens {
+    for (len, card) in lens.iter().zip(cards.iter()) {
         if let Some(l) = len.checked_sub(1) {
             points += 1 << l;
         }
+
+        let curr_qtd = card_map.get(&card.id).unwrap();
+        for _ in 0..*curr_qtd {
+            for i in card.id + 1..=(*len as u16 + card.id) {
+                // no past end of the table
+                if card_map.contains_key(&i) {
+                    card_map.entry(i)
+                        .and_modify(|c| { *c += 1 });
+                }
+            }
+        }
+    }
+
+    for n in card_map.values() {
+        n_of_cards += n;
     }
 
     println!("{points}");
+    println!("{n_of_cards}");
 }
