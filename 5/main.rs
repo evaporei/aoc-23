@@ -89,10 +89,9 @@ fn parse_map(line: &str) -> Map {
     Map(one.parse().unwrap(), two.parse().unwrap(), three.parse().unwrap())
 }
 
-fn main() {
+fn calculate(mut seeds: Vec<u64>) {
     // let lines = read_lines("./easy_input_part_one").unwrap(); // 35
-    let lines = read_lines("./input").unwrap(); // 177942185
-    let mut seeds = vec![];
+    let lines = read_lines("./input").unwrap(); // 177942185, 69841803
     let mut all_maps = vec![vec![]];
     let mut parsing_map = false;
     let map_strs = [
@@ -107,9 +106,6 @@ fn main() {
 
     for line in lines {
         let line = line.unwrap();
-        if line.starts_with("seeds:") {
-            seeds = parse_seeds(&line);
-        }
 
         if map_strs.iter().any(|s| line.starts_with(s)) {
             parsing_map = true;
@@ -142,5 +138,47 @@ fn main() {
         }
     }
 
-    println!("part one {}", seeds.iter().min().unwrap());
+    // to get the `i`s
+    // println!("{:?}", seeds.iter().enumerate().min_by(|(_, x), (_, y)| x.cmp(y)).unwrap());
+    println!("{:?}", seeds.iter().min().unwrap());
+}
+
+fn main() {
+    let lines = read_lines("./input").unwrap();
+    let mut seeds = vec![];
+    for line in lines {
+        let line = line.unwrap();
+        if line.starts_with("seeds:") {
+            seeds = parse_seeds(&line);
+        }
+    }
+    // part one
+    calculate(seeds);
+
+    // part two
+    // (i, location)
+
+    // fun fact: if you uncomment them all, it takes 3 min on a 11 gen thinkpad
+
+    // (180_368_864,   317_412_499)
+    // calculate((279_234_546..=279_234_546 + 382_175_449).collect::<Vec<u64>>());
+    // // (  2_795_998,   120_063_312)
+    // calculate((689_152_391..=689_152_391 + 244_427_042).collect::<Vec<u64>>());
+    // // (          0, 3_247_724_559)
+    // calculate((1_105_311_711..=1_105_311_711 + 2_036_236).collect::<Vec<u64>>());
+    // // ( 40_919_163,   384_367_353)
+    // calculate((1_450_749_684..=1_450_749_684 + 123_906_789).collect::<Vec<u64>>());
+    // // ( 59_963_967, 1_765_298_118)
+    // calculate((1_609_835_129..=1_609_835_129 + 60_050_954).collect::<Vec<u64>>());
+
+    // (454_652_699,    69_841_803) -> WINNER
+    calculate((2_044_765_513..=2_044_765_513 + 620_379_445).collect::<Vec<u64>>());
+    // // (          0, 3_117_212_723)
+    // calculate((2_906_422_699..=2_906_422_699 + 6_916_147).collect::<Vec<u64>>());
+    // // (          0,   210_388_587)
+    // calculate((3_075_226_163..=3_075_226_163 + 146_720_986).collect::<Vec<u64>>());
+    // // (101_953_205,   455_176_213)
+    // calculate((3_650_753_915..=3_650_753_915 + 127_044_950).collect::<Vec<u64>>());
+    // // ( 32_942_963,   291_248_263)
+    // calculate((3_994_686_181..3_994_686_181 + 93_904_335).collect::<Vec<u64>>());
 }
