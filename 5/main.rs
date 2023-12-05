@@ -9,8 +9,8 @@ where P: AsRef<Path>, {
 }
 
 // input could be seed, soil, etc
-fn dst_from_src(input: u32, dst: u32, src: u32, range: u32) -> Option<u32> {
-    if src > input || src + range < input {
+fn dst_from_src(input: u64, dst: u64, src: u64, range: u64) -> Option<u64> {
+    if src > input || src + range - 1 < input {
         return None;
     }
 
@@ -18,9 +18,7 @@ fn dst_from_src(input: u32, dst: u32, src: u32, range: u32) -> Option<u32> {
     if src == input {
         return Some(dst);
     }
-    // for (dst_n, src_n) in (dst..dst+range).iter().zip((src..src+range).iter()) {
-    // for dst_n in dst..dst+range {
-    // }
+
     let diff = input - src;
     Some(dst + diff)
 }
@@ -39,7 +37,7 @@ fn test_src_to_dst() {
     assert_eq!(dst_from_src(seed, 13, 55, 50), Some(58));
 
     // boundary checks
-    assert_eq!(dst_from_src(seed, 13, 95, 5), Some(18));
+    assert_eq!(dst_from_src(seed, 13, 95, 5), None);
 
     // some from sample/easy input
 
@@ -62,7 +60,7 @@ fn test_src_to_dst() {
     assert_eq!(dst_from_src(seed, 39, 0, 15), None);
 }
 
-fn parse_seeds(line: &str) -> Vec<u32> {
+fn parse_seeds(line: &str) -> Vec<u64> {
     let numbers = line // "seeds: 79 14 55 13"
         .split(':') // ["seeds", " 79 14 55 13"]
         .skip(1) // [" 79 14 55 13"]
@@ -78,7 +76,7 @@ fn parse_seeds(line: &str) -> Vec<u32> {
 
 // dst, src, range
 #[derive(Debug)]
-struct Map(u32, u32, u32);
+struct Map(u64, u64, u64);
 
 fn parse_map(line: &str) -> Map {
     let mut numbers = line // "0 15 37"
@@ -92,8 +90,8 @@ fn parse_map(line: &str) -> Map {
 }
 
 fn main() {
-    let lines = read_lines("./easy_input_part_one").unwrap(); // 32 (it should be 35)
-    // let lines = read_lines("./input").unwrap();
+    // let lines = read_lines("./easy_input_part_one").unwrap(); // 35
+    let lines = read_lines("./input").unwrap(); // 177942185
     let mut seeds = vec![];
     let mut all_maps = vec![vec![]];
     let mut parsing_map = false;
@@ -133,17 +131,16 @@ fn main() {
         }
     }
 
-    for map in all_maps {
-        for Map(dst, src, range) in map {
-            for seed in &mut seeds {
-                if let Some(d) = dst_from_src(*seed, dst, src, range) {
+    for maps in all_maps {
+        for seed in &mut seeds {
+            for Map(dst, src, range) in &maps {
+                if let Some(d) = dst_from_src(*seed, *dst, *src, *range) {
                     *seed = d;
+                    break;
                 }
             }
         }
     }
-
-    dbg!(&seeds);
 
     println!("part one {}", seeds.iter().min().unwrap());
 }
