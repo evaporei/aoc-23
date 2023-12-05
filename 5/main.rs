@@ -14,11 +14,6 @@ fn dst_from_src(input: u64, dst: u64, src: u64, range: u64) -> Option<u64> {
         return None;
     }
 
-    // it could be (input - src) == 0
-    if src == input {
-        return Some(dst);
-    }
-
     let diff = input - src;
     Some(dst + diff)
 }
