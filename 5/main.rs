@@ -95,8 +95,17 @@ fn main() {
     let lines = read_lines("./easy_input_part_one").unwrap(); // 13
     // let lines = read_lines("./input").unwrap(); // 32609, 14624680
     let mut seeds = vec![];
-    let mut seed_to_soil = vec![];
-    let mut parse_sts = false;
+    let mut all_maps = vec![vec![]];
+    let mut parsing_map = false;
+    let map_strs = [
+        "seed-to-soil map:",
+        "soil-to-fertilizer map:",
+        "fertilizer-to-water map:",
+        "water-to-light map:",
+        "light-to-temperature map:",
+        "temperature-to-humidity map:",
+        "humidity-to-location map:",
+    ];
 
     for line in lines {
         let line = line.unwrap();
@@ -104,20 +113,25 @@ fn main() {
             seeds = parse_seeds(&line);
         }
 
-        if line.starts_with("seed-to-soil map:") {
-            parse_sts = true;
+        if map_strs.iter().any(|s| line.starts_with(s)) {
+            parsing_map = true;
             continue;
         }
 
-        if parse_sts {
+        if parsing_map {
+            // this is beautiful, I don't need to
+            // replicate this logic outside of the loop
             if line.is_empty() {
-                parse_sts = false;
+                parsing_map = false;
+                all_maps.push(vec![]);
                 continue;
             }
 
-            seed_to_soil.push(parse_map(&line));
+            if let Some(m) = all_maps.last_mut() {
+                m.push(parse_map(&line));
+            }
         }
     }
 
-    dbg!(seed_to_soil);
+    dbg!(all_maps);
 }
