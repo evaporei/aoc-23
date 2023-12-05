@@ -9,57 +9,57 @@ where P: AsRef<Path>, {
 }
 
 // input could be seed, soil, etc
-fn dst_from_src(input: u32, dst: u32, src: u32, range: u32) -> u32 {
+fn dst_from_src(input: u32, dst: u32, src: u32, range: u32) -> Option<u32> {
     if src > input || src + range < input {
-        return input;
+        return None;
     }
 
     // it could be (input - src) == 0
     if src == input {
-        return dst;
+        return Some(dst);
     }
     // for (dst_n, src_n) in (dst..dst+range).iter().zip((src..src+range).iter()) {
     // for dst_n in dst..dst+range {
     // }
     let diff = input - src;
-    dst + diff
+    Some(dst + diff)
 }
 
 #[test]
 fn test_src_to_dst() {
     let seed = 100;
     // 120 > 100, there's nothing to range, input returns
-    assert_eq!(dst_from_src(seed, 13, 120, 50), 100);
+    assert_eq!(dst_from_src(seed, 13, 120, 50), None);
     // 100 == 100, return first dst
-    assert_eq!(dst_from_src(seed, 50, 100, 2), 50);
+    assert_eq!(dst_from_src(seed, 50, 100, 2), Some(50));
     // 97 + 2 = 99, still lower than 100, return input
-    assert_eq!(dst_from_src(seed, 50, 97, 2), 100);
+    assert_eq!(dst_from_src(seed, 50, 97, 2), None);
 
     // succeeds
-    assert_eq!(dst_from_src(seed, 13, 55, 50), 58);
+    assert_eq!(dst_from_src(seed, 13, 55, 50), Some(58));
 
     // boundary checks
-    assert_eq!(dst_from_src(seed, 13, 95, 5), 18);
+    assert_eq!(dst_from_src(seed, 13, 95, 5), Some(18));
 
     // some from sample/easy input
 
     let seed = 79;
-    assert_eq!(dst_from_src(seed, 50, 98, 2), 79);
-    assert_eq!(dst_from_src(seed, 52, 50, 48), 81);
+    assert_eq!(dst_from_src(seed, 50, 98, 2), None);
+    assert_eq!(dst_from_src(seed, 52, 50, 48), Some(81));
     let seed = 14;
-    assert_eq!(dst_from_src(seed, 50, 98, 2), 14);
-    assert_eq!(dst_from_src(seed, 52, 50, 48), 14);
+    assert_eq!(dst_from_src(seed, 50, 98, 2), None);
+    assert_eq!(dst_from_src(seed, 52, 50, 48), None);
     let seed = 55;
-    assert_eq!(dst_from_src(seed, 50, 98, 2), 55);
-    assert_eq!(dst_from_src(seed, 52, 50, 48), 57);
+    assert_eq!(dst_from_src(seed, 50, 98, 2), None);
+    assert_eq!(dst_from_src(seed, 52, 50, 48), Some(57));
     let seed = 13;
-    assert_eq!(dst_from_src(seed, 50, 98, 2), 13);
-    assert_eq!(dst_from_src(seed, 52, 50, 48), 13);
+    assert_eq!(dst_from_src(seed, 50, 98, 2), None);
+    assert_eq!(dst_from_src(seed, 52, 50, 48), None);
 
     let seed = 81;
-    assert_eq!(dst_from_src(seed, 0, 15, 37), 81);
-    assert_eq!(dst_from_src(seed, 37, 52, 2), 81);
-    assert_eq!(dst_from_src(seed, 39, 0, 15), 81);
+    assert_eq!(dst_from_src(seed, 0, 15, 37), None);
+    assert_eq!(dst_from_src(seed, 37, 52, 2), None);
+    assert_eq!(dst_from_src(seed, 39, 0, 15), None);
 }
 
 fn parse_seeds(line: &str) -> Vec<u32> {
@@ -92,8 +92,8 @@ fn parse_map(line: &str) -> Map {
 }
 
 fn main() {
-    let lines = read_lines("./easy_input_part_one").unwrap(); // 13
-    // let lines = read_lines("./input").unwrap(); // 32609, 14624680
+    let lines = read_lines("./easy_input_part_one").unwrap(); // 32 (it should be 35)
+    // let lines = read_lines("./input").unwrap();
     let mut seeds = vec![];
     let mut all_maps = vec![vec![]];
     let mut parsing_map = false;
@@ -133,5 +133,17 @@ fn main() {
         }
     }
 
-    dbg!(all_maps);
+    for map in all_maps {
+        for Map(dst, src, range) in map {
+            for seed in &mut seeds {
+                if let Some(d) = dst_from_src(*seed, dst, src, range) {
+                    *seed = d;
+                }
+            }
+        }
+    }
+
+    dbg!(&seeds);
+
+    println!("part one {}", seeds.iter().min().unwrap());
 }
