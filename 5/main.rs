@@ -76,17 +76,48 @@ fn parse_seeds(line: &str) -> Vec<u32> {
     })
 }
 
+// dst, src, range
+#[derive(Debug)]
+struct Map(u32, u32, u32);
+
+fn parse_map(line: &str) -> Map {
+    let mut numbers = line // "0 15 37"
+        .split_whitespace(); // ["0", "15", "37"]
+
+    let one = numbers.next().unwrap();
+    let two = numbers.next().unwrap();
+    let three = numbers.next().unwrap();
+
+    Map(one.parse().unwrap(), two.parse().unwrap(), three.parse().unwrap())
+}
+
 fn main() {
     let lines = read_lines("./easy_input_part_one").unwrap(); // 13
     // let lines = read_lines("./input").unwrap(); // 32609, 14624680
     let mut seeds = vec![];
+    let mut seed_to_soil = vec![];
+    let mut parse_sts = false;
 
     for line in lines {
         let line = line.unwrap();
         if line.starts_with("seeds:") {
             seeds = parse_seeds(&line);
         }
+
+        if line.starts_with("seed-to-soil map:") {
+            parse_sts = true;
+            continue;
+        }
+
+        if parse_sts {
+            if line.is_empty() {
+                parse_sts = false;
+                continue;
+            }
+
+            seed_to_soil.push(parse_map(&line));
+        }
     }
 
-    dbg!(seeds);
+    dbg!(seed_to_soil);
 }
