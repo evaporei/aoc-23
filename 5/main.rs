@@ -40,6 +40,26 @@ fn test_src_to_dst() {
 
     // boundary checks
     assert_eq!(dst_from_src(seed, 13, 95, 5), 18);
+
+    // some from sample/easy input
+
+    let seed = 79;
+    assert_eq!(dst_from_src(seed, 50, 98, 2), 79);
+    assert_eq!(dst_from_src(seed, 52, 50, 48), 81);
+    let seed = 14;
+    assert_eq!(dst_from_src(seed, 50, 98, 2), 14);
+    assert_eq!(dst_from_src(seed, 52, 50, 48), 14);
+    let seed = 55;
+    assert_eq!(dst_from_src(seed, 50, 98, 2), 55);
+    assert_eq!(dst_from_src(seed, 52, 50, 48), 57);
+    let seed = 13;
+    assert_eq!(dst_from_src(seed, 50, 98, 2), 13);
+    assert_eq!(dst_from_src(seed, 52, 50, 48), 13);
+
+    let seed = 81;
+    assert_eq!(dst_from_src(seed, 0, 15, 37), 81);
+    assert_eq!(dst_from_src(seed, 37, 52, 2), 81);
+    assert_eq!(dst_from_src(seed, 39, 0, 15), 81);
 }
 
 fn parse_seeds(line: &str) -> Vec<u32> {
