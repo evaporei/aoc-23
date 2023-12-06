@@ -22,6 +22,22 @@ fn n_ways_to_beat(time: u64, record: u64) -> u64 {
     n
 }
 
+const fn comptime<const TIME: u64>(record: u64) -> u64 {
+    let mut n = 0;
+    let mut hold = 1;
+
+    while hold < TIME {
+        let time_left = TIME - hold;
+        let distance_travelled = hold * time_left;
+        if distance_travelled > record {
+            n += 1;
+        }
+        hold += 1;
+    }
+
+    n
+}
+
 #[test]
 fn test_n_ways_to_beat() {
     assert_eq!(n_ways_to_beat(7, 9), 4);
@@ -58,10 +74,10 @@ fn part_one() {
 }
 
 fn part_two() {
-    let time = 62_649_190;
+    const TIME: u64 = 62_649_190;
     let distance = 553_101_014_731_074;
 
-    let total: u64 = n_ways_to_beat(time, distance);
+    let total: u64 = comptime::<TIME>(distance);
 
     println!("part two {total}"); // 41382569
 }
