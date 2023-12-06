@@ -29,7 +29,7 @@ fn test_n_ways_to_beat() {
     assert_eq!(n_ways_to_beat(30, 200), 9);
 }
 
-fn main() {
+fn part_one() {
     // let mut lines = read_lines("./easy_input_part_one").unwrap(); // 288
     let mut lines = read_lines("./input").unwrap(); // 840336
 
@@ -55,4 +55,8 @@ fn main() {
     }
 
     println!("part one {total}");
+}
+
+fn main() {
+    part_one();
 }
