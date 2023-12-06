@@ -77,11 +77,11 @@ fn parse_map(line: &str) -> Map {
     let mut numbers = line // "0 15 37"
         .split_whitespace(); // ["0", "15", "37"]
 
-    let one = numbers.next().unwrap();
-    let two = numbers.next().unwrap();
-    let three = numbers.next().unwrap();
+    let dst = numbers.next().unwrap();
+    let src = numbers.next().unwrap();
+    let range = numbers.next().unwrap();
 
-    Map(one.parse().unwrap(), two.parse().unwrap(), three.parse().unwrap())
+    Map(dst.parse().unwrap(), src.parse().unwrap(), range.parse().unwrap())
 }
 
 fn locations(mut seeds: Vec<u64>) {
