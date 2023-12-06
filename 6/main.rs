@@ -8,7 +8,7 @@ where P: AsRef<Path>, {
     Ok(io::BufReader::new(file).lines())
 }
 
-fn n_ways_to_beat(time: u16, record: u16) -> u16 {
+fn n_ways_to_beat(time: u64, record: u64) -> u64 {
     let mut n = 0;
 
     for hold in 1..time {
@@ -35,28 +35,38 @@ fn part_one() {
 
     // parsing
     let time_str = lines.next().unwrap().unwrap();
-    let times: Vec<u16> = time_str
+    let times: Vec<u64> = time_str
         .split_whitespace()
         .skip(1)
         .map(str::parse)
         .map(Result::unwrap)
         .collect();
     let distance_str = lines.next().unwrap().unwrap();
-    let distances: Vec<u16> = distance_str
+    let distances: Vec<u64> = distance_str
         .split_whitespace()
         .skip(1)
         .map(str::parse)
         .map(Result::unwrap)
         .collect();
-    let mut total: u32 = 1;
+    let mut total: u64 = 1;
 
     for (time, distance) in times.iter().zip(distances.iter()) {
-        total *= n_ways_to_beat(*time, *distance) as u32;
+        total *= n_ways_to_beat(*time, *distance);
     }
 
     println!("part one {total}");
 }
 
+fn part_two() {
+    let time = 62_649_190;
+    let distance = 553_101_014_731_074;
+
+    let total: u64 = n_ways_to_beat(time, distance);
+
+    println!("part two {total}"); // 41382569
+}
+
 fn main() {
     part_one();
+    part_two();
 }
