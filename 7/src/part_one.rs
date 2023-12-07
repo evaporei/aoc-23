@@ -156,7 +156,6 @@ struct Hand {
     cards: String,
     bid: u32,
     kind: Kind,
-    rank: u32,
 }
 
 impl Hand {
@@ -170,7 +169,6 @@ impl Hand {
             cards,
             bid,
             kind,
-            rank: 0,
         }
     }
 }
