@@ -233,7 +233,7 @@ impl PartialOrd for Hand {
                 return card_cmp;
             }
         }
-        kind_cmp
+        unreachable!("all cards are the same")
     }
 }
 
