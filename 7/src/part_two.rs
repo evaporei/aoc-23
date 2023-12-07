@@ -119,11 +119,32 @@ fn test_kind_checks() {
 
 impl From<&str> for Kind {
     fn from(cards: &str) -> Self {
+        let mut map = card_map(cards);
+
+        if cards.contains('J') {
+            let j_count = cards.bytes().filter(|ch| *ch == b'J').count();
+            // both strategies below don't work 'yet'
+            let most_matches = map.values().max().copied().unwrap();
+
+            for count in map.values_mut() {
+                if *count == most_matches {
+                    *count += j_count;
+                    break;
+                }
+            }
+
+            // let biggest_key = map.iter().max_by(|a, b| a.1.cmp(b.1)).map(|(k, _v)| k).copied().unwrap();
+            // for (k, v) in map.iter_mut() {
+            //     if *k == biggest_key {
+            //         *v += j_count;
+            //         break;
+            //     }
+            // }
+        }
+
         if Self::is_five_of_a_kind(cards) {
             return Self::FiveOfAKind;
         }
-
-        let map = card_map(cards);
 
         if Self::is_four_of_a_kind(&map) {
             return Self::FourOfAKind;
@@ -242,8 +263,8 @@ impl PartialOrd for Hand {
 }
 
 pub fn run() {
-    let lines = read_lines("./easy_input_part_one").unwrap();
-    // let lines = read_lines("./input").unwrap();
+    // let lines = read_lines("./easy_input_part_one").unwrap(); // 5905
+    let lines = read_lines("./input").unwrap(); // 248191286 (too high)
     let mut hands = vec![];
 
     for line in lines {
