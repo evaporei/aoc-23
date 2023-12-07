@@ -29,9 +29,17 @@ fn card_map(cards: &str) -> CardMap {
     let mut map = HashMap::new();
 
     for card in cards.bytes() {
+        if card == b'J' {
+            continue;
+        }
         map.entry(card)
             .and_modify(|c| *c += 1)
             .or_insert(1);
+    }
+
+    // all 'J's
+    if map.is_empty() {
+        map.insert(b'J', 5);
     }
 
     map
@@ -75,40 +83,20 @@ impl Kind {
 
 #[test]
 fn test_kind_checks() {
-    assert_eq!(Kind::is_five_of_a_kind(&card_map("AAAAA")), true);
-    assert_eq!(Kind::is_five_of_a_kind(&card_map("22222")), true);
-    assert_eq!(Kind::is_five_of_a_kind(&card_map("22322")), false);
+    assert_eq!(Kind::from("JJJJJ"), Kind::FiveOfAKind);
+    assert_eq!(Kind::from("AAAAA"), Kind::FiveOfAKind);
+    assert_eq!(Kind::from("22222"), Kind::FiveOfAKind);
+    assert_eq!(Kind::from("J2JJJ"), Kind::FiveOfAKind);
+    assert_eq!(Kind::from("33JJJ"), Kind::FiveOfAKind);
 
-    assert_eq!(Kind::is_four_of_a_kind(&card_map("22322")), true);
-    assert_eq!(Kind::is_four_of_a_kind(&card_map("AAAAA")), false);
-    assert_eq!(Kind::is_four_of_a_kind(&card_map("J2J44")), false);
-    assert_eq!(Kind::is_four_of_a_kind(&card_map("J2JJJ")), true);
+    assert_eq!(Kind::from("22322"), Kind::FourOfAKind);
+    assert_eq!(Kind::from("J2J44"), Kind::FourOfAKind);
 
-    assert_eq!(Kind::is_full_house(&card_map("22QQ2")), true);
-    assert_eq!(Kind::is_full_house(&card_map("22TQ2")), false);
-    assert_eq!(Kind::is_full_house(&card_map("22322")), false);
-    assert_eq!(Kind::is_full_house(&card_map("AAAAA")), false);
-    assert_eq!(Kind::is_full_house(&card_map("J2J44")), false);
-    assert_eq!(Kind::is_full_house(&card_map("33JJJ")), true);
+    assert_eq!(Kind::from("22QQ2"), Kind::FullHouse);
+    assert_eq!(Kind::from("33TTT"), Kind::FullHouse);
+    assert_eq!(Kind::from("4T44T"), Kind::FullHouse);
 
-    assert_eq!(Kind::is_three_of_a_kind(&card_map("223Q2")), true);
-    assert_eq!(Kind::is_three_of_a_kind(&card_map("22322")), false);
-    assert_eq!(Kind::is_three_of_a_kind(&card_map("AAAAA")), false);
-    assert_eq!(Kind::is_three_of_a_kind(&card_map("J2J44")), false);
-    assert_eq!(Kind::is_three_of_a_kind(&card_map("32JJJ")), true);
-
-    assert_eq!(Kind::is_two_pair(&card_map("4242J")), true);
-    assert_eq!(Kind::is_two_pair(&card_map("22322")), false);
-    assert_eq!(Kind::is_two_pair(&card_map("22322")), false);
-    assert_eq!(Kind::is_two_pair(&card_map("AAAAA")), false);
-    assert_eq!(Kind::is_two_pair(&card_map("J44QJ")), true);
-
-    assert_eq!(Kind::is_one_pair(&card_map("4K42J")), true);
-    assert_eq!(Kind::is_one_pair(&card_map("4242J")), false);
-    assert_eq!(Kind::is_one_pair(&card_map("22322")), false);
-    assert_eq!(Kind::is_one_pair(&card_map("4KT2J")), false);
-    assert_eq!(Kind::is_one_pair(&card_map("AAAAA")), false);
-    assert_eq!(Kind::is_one_pair(&card_map("J4TQJ")), true);
+    assert_eq!(Kind::from("223Q2"), Kind::ThreeOfAKind);
 }
 
 impl From<&str> for Kind {
@@ -117,7 +105,10 @@ impl From<&str> for Kind {
 
         if cards.contains('J') {
             let j_count = cards.bytes().filter(|ch| *ch == b'J').count();
-            // both strategies below don't work 'yet'
+            if j_count == 5 {
+                return Self::FiveOfAKind;
+            }
+
             let most_matches = map.values().max().copied().unwrap();
 
             for count in map.values_mut() {
@@ -126,14 +117,6 @@ impl From<&str> for Kind {
                     break;
                 }
             }
-
-            // let biggest_key = map.iter().max_by(|a, b| a.1.cmp(b.1)).map(|(k, _v)| k).copied().unwrap();
-            // for (k, v) in map.iter_mut() {
-            //     if *k == biggest_key {
-            //         *v += j_count;
-            //         break;
-            //     }
-            // }
         }
 
         if Self::is_five_of_a_kind(&map) {
@@ -258,7 +241,8 @@ impl PartialOrd for Hand {
 
 pub fn run() {
     // let lines = read_lines("./easy_input_part_one").unwrap(); // 5905
-    let lines = read_lines("./input").unwrap(); // 248191286, 246135914 (too high)
+    let lines = read_lines("./input").unwrap(); // 248191286, 246135914 (too high), 245672634 (too
+                                                // low), 245794069 (weeee)
     let mut hands = vec![];
 
     for line in lines {
