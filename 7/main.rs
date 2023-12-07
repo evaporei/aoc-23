@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -10,7 +11,7 @@ where P: AsRef<Path>, {
 }
 
 // type in the readings
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, PartialOrd, Ord)]
 enum Kind {
     FiveOfAKind,
     FourOfAKind,
@@ -149,13 +150,13 @@ impl From<&str> for Kind {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Ord, Eq)]
 struct Hand {
     // A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, or 2
     cards: String,
-    bid: u16,
+    bid: u32,
     kind: Kind,
-    rank: u16,
+    rank: u32,
 }
 
 impl Hand {
@@ -174,16 +175,95 @@ impl Hand {
     }
 }
 
+impl PartialEq for Hand {
+    fn eq(&self, other: &Self) -> bool {
+        self.kind == other.kind
+    }
+}
+
+// A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, or 2
+#[derive(Eq, PartialEq, Ord, PartialOrd)]
+enum Card {
+    A,
+    K,
+    Q,
+    J,
+    T,
+    Nine,
+    Eight,
+    Seven,
+    Six,
+    Five,
+    Four,
+    Three,
+    Two,
+}
+
+impl From<u8> for Card {
+    fn from(ch: u8) -> Self {
+        match ch {
+            b'A' => Self::A,
+            b'K' => Self::K,
+            b'Q' => Self::Q,
+            b'J' => Self::J,
+            b'T' => Self::T,
+            b'9' => Self::Nine,
+            b'8' => Self::Eight,
+            b'7' => Self::Seven,
+            b'6' => Self::Six,
+            b'5' => Self::Five,
+            b'4' => Self::Four,
+            b'3' => Self::Three,
+            b'2' => Self::Two,
+            _ => unreachable!("k a b o o m"),
+        }
+    }
+}
+
+impl PartialOrd for Hand {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        let kind_cmp = self.kind.partial_cmp(&other.kind);
+        if kind_cmp != Some(Ordering::Equal) {
+            return kind_cmp;
+        }
+        for (card1, card2) in self.cards.bytes().zip(other.cards.bytes()) {
+            let card1 = Card::from(card1);
+            let card2 = Card::from(card2);
+
+            let card_cmp = card1.partial_cmp(&card2);
+            if card_cmp == Some(Ordering::Equal) {
+                continue;
+            } else {
+                return card_cmp;
+            }
+        }
+        kind_cmp
+    }
+}
+
 fn part_one() {
-    let lines = read_lines("./easy_input_part_one").unwrap();
-    // let mut lines = read_lines("./input").unwrap();
+    // let lines = read_lines("./easy_input_part_one").unwrap(); // 6440
+    let lines = read_lines("./input").unwrap(); // 246163188
+    let mut hands = vec![];
 
     for line in lines {
         let line = line.unwrap();
 
         let hand = Hand::parse(&line);
-        dbg!(hand);
+        hands.push(hand);
     }
+
+    hands.sort();
+
+    let mut total = 0;
+
+    for (i, hand) in hands.iter().enumerate() {
+        let rank = hands.len() - i;
+        let winnings = hand.bid * rank as u32;
+        total += winnings;
+    }
+
+    println!("part one {total}");
 }
 
 fn main() {
