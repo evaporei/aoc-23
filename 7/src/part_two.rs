@@ -181,13 +181,12 @@ impl PartialEq for Hand {
     }
 }
 
-// A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, or 2
+// A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2 or J
 #[derive(Eq, PartialEq, Ord, PartialOrd)]
 enum Card {
     A,
     K,
     Q,
-    J,
     T,
     Nine,
     Eight,
@@ -197,6 +196,7 @@ enum Card {
     Four,
     Three,
     Two,
+    J,
 }
 
 impl From<u8> for Card {
@@ -205,7 +205,6 @@ impl From<u8> for Card {
             b'A' => Self::A,
             b'K' => Self::K,
             b'Q' => Self::Q,
-            b'J' => Self::J,
             b'T' => Self::T,
             b'9' => Self::Nine,
             b'8' => Self::Eight,
@@ -215,6 +214,7 @@ impl From<u8> for Card {
             b'4' => Self::Four,
             b'3' => Self::Three,
             b'2' => Self::Two,
+            b'J' => Self::J,
             _ => unreachable!("k a b o o m"),
         }
     }
