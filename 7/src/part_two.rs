@@ -38,14 +38,8 @@ fn card_map(cards: &str) -> CardMap {
 }
 
 impl Kind {
-    fn is_five_of_a_kind(cards: &str) -> bool {
-        for pair in cards.as_bytes().windows(2) {
-            if pair[0] != pair[1] {
-                return false;
-            }
-        }
-
-        true
+    fn is_five_of_a_kind(cards: &CardMap) -> bool {
+        Self::is_n_of_a_kind(cards, 5)
     }
     fn is_four_of_a_kind(cards: &CardMap) -> bool {
         Self::is_n_of_a_kind(cards, 4)
@@ -81,9 +75,9 @@ impl Kind {
 
 #[test]
 fn test_kind_checks() {
-    assert_eq!(Kind::is_five_of_a_kind("AAAAA"), true);
-    assert_eq!(Kind::is_five_of_a_kind("22222"), true);
-    assert_eq!(Kind::is_five_of_a_kind("22322"), false);
+    assert_eq!(Kind::is_five_of_a_kind(&card_map("AAAAA")), true);
+    assert_eq!(Kind::is_five_of_a_kind(&card_map("22222")), true);
+    assert_eq!(Kind::is_five_of_a_kind(&card_map("22322")), false);
 
     assert_eq!(Kind::is_four_of_a_kind(&card_map("22322")), true);
     assert_eq!(Kind::is_four_of_a_kind(&card_map("AAAAA")), false);
@@ -142,7 +136,7 @@ impl From<&str> for Kind {
             // }
         }
 
-        if Self::is_five_of_a_kind(cards) {
+        if Self::is_five_of_a_kind(&map) {
             return Self::FiveOfAKind;
         }
 
@@ -264,7 +258,7 @@ impl PartialOrd for Hand {
 
 pub fn run() {
     // let lines = read_lines("./easy_input_part_one").unwrap(); // 5905
-    let lines = read_lines("./input").unwrap(); // 248191286 (too high)
+    let lines = read_lines("./input").unwrap(); // 248191286, 246135914 (too high)
     let mut hands = vec![];
 
     for line in lines {
