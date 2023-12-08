@@ -5,12 +5,12 @@ QFA = (QQR, HDH)
 RXA = (NLJ, JPG)
 JSA = (TNJ, JXC)
 
-VLD = (QKB, QCZ)
-PJD = (VLM, JJZ)
-XQQ = (VVL, LRZ)
-KMJ = (MLJ, PQZ)
-HSR = (BHH, ZZZ)
-THB = (XFT, VHZ)
+VLD = (QKB, QCZ) -> QCZ = (JPG, NLJ) aka RXA
+PJD = (VLM, JJZ) -> JJZ = (JVD, JSN) aka RLA
+XQQ = (VVL, LRZ) -> LRZ = (JXC, TNJ) aka JSA
+KMJ = (MLJ, PQZ) -> PQZ = (HDH, QQR) aka QFA
+HSR = (BHH, ZZZ) -> ZZZ = (MFQ, JXS) aka AAA
+THB = (XFT, VHZ) -> VHZ = (RRN, TSH) aka QLA
 
 
 // the first step of each --A,
