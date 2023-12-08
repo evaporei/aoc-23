@@ -1,0 +1,30 @@
+// run 1 w/ dbg!()
+[main.rs:97] l = "BHH"
+[main.rs:97] r = "ZZZ"
+part one 18157
+[main.rs:97] l = "BHH"
+[main.rs:97] r = "ZZZ"
+part two AAA: 18157
+[main.rs:97] l = "VLM"
+[main.rs:97] r = "JJZ"
+part two RLA: 14363
+[main.rs:97] l = "XFT"
+[main.rs:97] r = "VHZ"
+part two QLA: 16531
+[main.rs:97] l = "MLJ"
+[main.rs:97] r = "PQZ"
+part two QFA: 12737
+[main.rs:97] l = "QKB"
+[main.rs:97] r = "QCZ"
+part two RXA: 19783
+[main.rs:97] l = "VVL"
+[main.rs:97] r = "LRZ"
+part two JSA: 19241
+
+// run 2 w/ proper formatting
+AAA - ZZZ: 18157
+RLA - JJZ: 14363
+QLA - VHZ: 16531
+QFA - PQZ: 12737
+RXA - QCZ: 19783
+JSA - LRZ: 18157

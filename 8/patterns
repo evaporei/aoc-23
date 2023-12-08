@@ -1,0 +1,52 @@
+AAA = (JXS, MFQ)
+RLA = (JSN, JVD)
+QLA = (TSH, RRN)
+QFA = (QQR, HDH)
+RXA = (NLJ, JPG)
+JSA = (TNJ, JXC)
+
+VLD = (QKB, QCZ)
+PJD = (VLM, JJZ)
+XQQ = (VVL, LRZ)
+KMJ = (MLJ, PQZ)
+HSR = (BHH, ZZZ)
+THB = (XFT, VHZ)
+
+
+// the first step of each --A,
+// leads to the same pair
+JXS = (SBL, CQB)
+MFQ = (SBL, CQB)
+
+JSN = (QFQ, LJQ)
+JVD = (QFQ, LJQ)
+
+TSH = (BGL, SVT)
+RRN = (BGL, SVT)
+
+QQR = (DTX, HND)
+HDH = (HND, DTX)
+
+NLJ = (GBH, JCT)
+JPG = (JCT, GBH)
+
+TNJ = (LMV, PMP)
+JXC = (LMV, PMP)
+
+
+// all go right to get to --Z
+// (last step)
+XLG = (LTN, VLD)
+BVS = (QQV, PJD)
+VXL = (HXR, XQQ)
+PJN = (RRT, KMJ)
+HCF = (NFG, HSR)
+XFX = (KSN, THB)
+
+
+AAA - ZZZ - 18157
+RLA - JJZ - 14363
+QLA - VHZ - 16531
+QFA - PQZ - 12737
+RXA - QCZ - 19783
+JSA - LRZ - 19241

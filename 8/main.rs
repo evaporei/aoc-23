@@ -12,13 +12,16 @@ where P: AsRef<Path>, {
 fn main() {
     // let mut lines = read_lines("./example1").unwrap(); // 2
     // let mut lines = read_lines("./example2").unwrap(); // 6
-    let mut lines = read_lines("./input").unwrap(); // 18157
+    let mut lines = read_lines("./input").unwrap(); // 18157, 19783 (too low)
 
     // LLR
     let steps = lines.next().unwrap().unwrap();
 
     // empty line
     let _ = lines.next();
+
+    // let a_steps = ["AAA", "RLA", "QLA", "QFA", "RXA", "JSA"];
+    let z_steps = ["QCZ", "LRZ", "ZZZ", "PQZ", "VHZ", "JJZ"];
 
     let mut map = BTreeMap::new();
 
@@ -39,23 +42,45 @@ fn main() {
         right.remove(4); // )
         right.remove(0); // \s
 
-        if origin != "ZZZ" {
+        // if origin != "ZZZ" {
+        if !z_steps.contains(&origin.as_str()) {
             // just insert the first one
             map.entry(origin)
                 .or_insert((left, right));
         }
     }
 
-    let n_steps = find_steps("AAA", "ZZZ", &map, &steps);
+    // let n_steps = find_steps("AAA", "ZZZ", &map, &steps);
+    let n_steps = find_steps("AAA", &["ZZZ"], &map, &steps);
     println!("part one {n_steps}");
+
+    // for a_step in a_steps {
+    //     let n_steps = find_steps(a_step, &z_steps, &map, &steps);
+    //     println!("part two {a_step}: {n_steps}");
+    // }
+    println!("part two:");
+    let n_steps = find_steps("AAA", &["ZZZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "AAA", "ZZZ"); // 18157
+    let n_steps = find_steps("RLA", &["JJZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "RLA", "JJZ"); // 14363
+    let n_steps = find_steps("QLA", &["VHZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "QLA", "VHZ"); // 16531
+    let n_steps = find_steps("QFA", &["PQZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "QFA", "PQZ"); // 12737
+    let n_steps = find_steps("RXA", &["QCZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "RXA", "QCZ"); // 19783 -> shouldn't be the answer? (max)
+    let n_steps = find_steps("AAA", &["LRZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "JSA", "LRZ"); // 18157
 }
 
-fn find_steps(start: &str, end: &str, map: &BTreeMap<String, (String, String)>, steps: &str) -> u32 {
+// fn find_steps(start: &str, end: &str, map: &BTreeMap<String, (String, String)>, steps: &str) -> u32 {
+fn find_steps(start: &str, ends: &[&str], map: &BTreeMap<String, (String, String)>, steps: &str) -> u32 {
     let (mut l, mut r) = map.get(start).unwrap().clone();
     let mut n_steps = 1;
     let mut i = 0;
 
-    while l != end || r != end {
+    // while l != end || r != end {
+    while !ends.contains(&l.as_str()) || !ends.contains(&r.as_str()) {
         if i == steps.len() {
             i = 0;
         }
