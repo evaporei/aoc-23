@@ -50,8 +50,10 @@ fn main() {
         if origin.ends_with('Z') {
             z_steps.push(origin.clone());
         } else {
-            // just insert the first one
+            // we don't push Z into the map
+            // so we don't loop forever in find_steps
             map.entry(origin)
+                // just insert the first one
                 .or_insert((left, right));
         }
     }
@@ -78,15 +80,14 @@ fn find_steps(start: &str, ends: &[String], map: &BTreeMap<String, (String, Stri
         }
         let step = steps.bytes().nth(i).unwrap();
         (l, r) = match step {
-            b'L' => match map.get(&l) {
-                Some(directions) => directions.clone(),
-                None => break,
-            },
+            // we can always unwrap, because it always ends in R (last Z)
+            b'L' => map.get(&l).unwrap().clone(),
             b'R' => match map.get(&r) {
                 Some(directions) => directions.clone(),
+                // Z is not a key in the map, so we got to the end
                 None => break,
             },
-            _ => unreachable!("bad input, only L and R are allowed"),
+            _ => unreachable!("bad input in steps, only L and R are allowed"),
         };
         n_steps += 1;
         i += 1;
