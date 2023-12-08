@@ -56,7 +56,7 @@ fn main() {
     }
 
     let n_steps = count_steps("AAA", &map, &instructions);
-    println!("part one {n_steps}");
+    println!("part one: {n_steps}");
 
     let mut everyone_at_z = 1;
     for a_step in a_steps {
