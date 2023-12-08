@@ -10,8 +10,8 @@ where P: AsRef<Path>, {
 }
 
 fn main() {
-    let mut lines = read_lines("./example1").unwrap(); // 2
-    // let lines = read_lines("./example2").unwrap();
+    // let mut lines = read_lines("./example1").unwrap(); // 2
+    let mut lines = read_lines("./example2").unwrap(); // 6
     // let lines = read_lines("./input").unwrap();
 
     // LLR
@@ -48,15 +48,20 @@ fn main() {
 
     let (mut l, mut r) = map.get("AAA").unwrap().clone();
     let mut n_steps = 0;
+    let mut i = 0;
 
     while l != "ZZZ" || r != "ZZZ" {
-        let step = steps.bytes().nth(n_steps).unwrap();
+        if i == steps.len() {
+            i = 0;
+        }
+        let step = steps.bytes().nth(i).unwrap();
         (l, r) = match step {
             b'L' => map.get(&l).unwrap().clone(),
             b'R' => map.get(&r).unwrap().clone(),
             _ => unreachable!("bad input, only L and R are allowed"),
         };
         n_steps += 1;
+        i += 1;
     }
 
     println!("part one {n_steps}");
