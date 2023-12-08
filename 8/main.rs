@@ -11,8 +11,8 @@ where P: AsRef<Path>, {
 
 fn main() {
     // let mut lines = read_lines("./example1").unwrap(); // 2
-    let mut lines = read_lines("./example2").unwrap(); // 6
-    // let lines = read_lines("./input").unwrap();
+    // let mut lines = read_lines("./example2").unwrap(); // 6
+    let mut lines = read_lines("./input").unwrap(); // 18157
 
     // LLR
     let steps = lines.next().unwrap().unwrap();
@@ -39,15 +39,15 @@ fn main() {
         right.remove(4); // )
         right.remove(0); // \s
 
-        // println!("{left}, {right}");
-
-        map.insert(origin, (left, right));
+        if origin != "ZZZ" {
+            if !map.contains_key(&origin) {
+                map.insert(origin, (left, right));
+            }
+        }
     }
 
-    // dbg!(&map);
-
     let (mut l, mut r) = map.get("AAA").unwrap().clone();
-    let mut n_steps = 0;
+    let mut n_steps = 1;
     let mut i = 0;
 
     while l != "ZZZ" || r != "ZZZ" {
@@ -56,8 +56,18 @@ fn main() {
         }
         let step = steps.bytes().nth(i).unwrap();
         (l, r) = match step {
-            b'L' => map.get(&l).unwrap().clone(),
-            b'R' => map.get(&r).unwrap().clone(),
+            b'L' => {
+                if map.get(&l).is_none() {
+                    break;
+                }
+                map.get(&l).unwrap().clone()
+            },
+            b'R' => {
+                if map.get(&r).is_none() {
+                    break;
+                }
+                map.get(&r).unwrap().clone()
+            },
             _ => unreachable!("bad input, only L and R are allowed"),
         };
         n_steps += 1;
