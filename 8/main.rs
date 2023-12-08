@@ -10,14 +10,12 @@ where P: AsRef<Path>, {
 }
 
 fn main() {
-    let mut lines = read_lines("./example1").unwrap();
+    let mut lines = read_lines("./example1").unwrap(); // 2
     // let lines = read_lines("./example2").unwrap();
     // let lines = read_lines("./input").unwrap();
 
     // LLR
     let steps = lines.next().unwrap().unwrap();
-
-    dbg!(steps);
 
     // empty line
     let _ = lines.next();
@@ -41,10 +39,25 @@ fn main() {
         right.remove(4); // )
         right.remove(0); // \s
 
-        println!("{left}, {right}");
+        // println!("{left}, {right}");
 
         map.insert(origin, (left, right));
     }
 
-    dbg!(&map);
+    // dbg!(&map);
+
+    let (mut l, mut r) = map.get("AAA").unwrap().clone();
+    let mut n_steps = 0;
+
+    while l != "ZZZ" || r != "ZZZ" {
+        let step = steps.bytes().nth(n_steps).unwrap();
+        (l, r) = match step {
+            b'L' => map.get(&l).unwrap().clone(),
+            b'R' => map.get(&r).unwrap().clone(),
+            _ => unreachable!("bad input, only L and R are allowed"),
+        };
+        n_steps += 1;
+    }
+
+    println!("part one {n_steps}");
 }
