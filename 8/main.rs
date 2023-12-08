@@ -51,25 +51,25 @@ fn main() {
             z_steps.push(origin);
         } else {
             // we don't push Z into the map
-            // so we don't loop forever in find_steps
+            // so we don't loop forever in count_steps
             map.entry(origin)
                 // just insert the first one
                 .or_insert((left, right));
         }
     }
 
-    let n_steps = find_steps("AAA", &["ZZZ".to_string()], &map, &steps);
+    let n_steps = count_steps("AAA", &["ZZZ".to_string()], &map, &steps);
     println!("part one {n_steps}");
 
     let mut everyone_at_z = 1;
     for a_step in a_steps {
-        let n_steps = find_steps(&a_step, &z_steps, &map, &steps);
+        let n_steps = count_steps(&a_step, &z_steps, &map, &steps);
         everyone_at_z = lcm(everyone_at_z, n_steps);
     }
     println!("part two: {everyone_at_z}");
 }
 
-fn find_steps(start: &str, ends: &[String], map: &BTreeMap<String, (String, String)>, steps: &str) -> u64 {
+fn count_steps(start: &str, ends: &[String], map: &BTreeMap<String, (String, String)>, steps: &str) -> u64 {
     let (mut l, mut r) = map.get(start).unwrap().clone();
     let mut n_steps = 1;
     let mut i = 0;
