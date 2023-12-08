@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
@@ -21,17 +22,19 @@ fn main() {
     // empty line
     let _ = lines.next();
 
+    let mut map = BTreeMap::new();
+
     for line in lines {
         // CCC = (BBB, DDD)
         let line = line.unwrap();
         let mut line = line.split('=');
 
-        let mut path = line.next().unwrap().to_owned();
-        path.pop(); // \s
+        let mut origin = line.next().unwrap().to_owned();
+        origin.pop(); // \s
 
-        let mut options = line.next().unwrap().split(',');
-        let mut left = options.next().unwrap().to_owned();
-        let mut right = options.next().unwrap().to_owned();
+        let mut directions = line.next().unwrap().split(',');
+        let mut left = directions.next().unwrap().to_owned();
+        let mut right = directions.next().unwrap().to_owned();
 
         left.remove(0); // (
         left.remove(0); // \s
@@ -39,5 +42,9 @@ fn main() {
         right.remove(0); // \s
 
         println!("{left}, {right}");
+
+        map.insert(origin, (left, right));
     }
+
+    dbg!(&map);
 }
