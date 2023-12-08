@@ -23,6 +23,8 @@ fn main() {
     let _ = lines.next();
 
     let mut map = BTreeMap::new();
+    let mut a_steps = vec![];
+    let mut z_steps = vec![];
 
     for line in lines {
         // CCC = (BBB, DDD)
@@ -41,24 +43,17 @@ fn main() {
         right.remove(4); // )
         right.remove(0); // \s
 
-        // just insert the first one
-        map.entry(origin)
-            .or_insert((left, right));
-    }
+        if origin.ends_with('A') {
+            a_steps.push(origin.clone());
+        }
 
-    let a_steps: Vec<String> = map
-        .keys()
-        .filter(|s| s.ends_with('A')).
-        map(|s| s.clone())
-        .collect();
-    let z_steps: Vec<String> = map
-        .keys()
-        .filter(|s| s.ends_with('Z'))
-        .map(|s| s.clone())
-        .collect();
-
-    for z in &z_steps {
-        map.remove(z);
+        if origin.ends_with('Z') {
+            z_steps.push(origin.clone());
+        } else {
+            // just insert the first one
+            map.entry(origin)
+                .or_insert((left, right));
+        }
     }
 
     let n_steps = find_steps("AAA", &["ZZZ".to_string()], &map, &steps);
