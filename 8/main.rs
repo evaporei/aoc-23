@@ -17,7 +17,7 @@ fn main() {
     // 201405124411 (lcm, wrong ;-;), 14299763833181 (yay!)
 
     // LLR
-    let steps = lines.next().unwrap().unwrap();
+    let instructions = lines.next().unwrap().unwrap();
 
     // empty line
     let _ = lines.next();
@@ -58,28 +58,28 @@ fn main() {
         }
     }
 
-    let n_steps = count_steps("AAA", &["ZZZ".to_string()], &map, &steps);
+    let n_steps = count_steps("AAA", &["ZZZ".to_string()], &map, &instructions);
     println!("part one {n_steps}");
 
     let mut everyone_at_z = 1;
     for a_step in a_steps {
-        let n_steps = count_steps(&a_step, &z_steps, &map, &steps);
+        let n_steps = count_steps(&a_step, &z_steps, &map, &instructions);
         everyone_at_z = lcm(everyone_at_z, n_steps);
     }
     println!("part two: {everyone_at_z}");
 }
 
-fn count_steps(start: &str, ends: &[String], map: &BTreeMap<String, (String, String)>, steps: &str) -> u64 {
+fn count_steps(start: &str, ends: &[String], map: &BTreeMap<String, (String, String)>, instructions: &str) -> u64 {
     let (mut l, mut r) = map.get(start).unwrap().clone();
     let mut n_steps = 1;
     let mut i = 0;
 
     while !ends.contains(&l) || !ends.contains(&r) {
-        if i == steps.len() {
+        if i == instructions.len() {
             i = 0;
         }
-        let step = steps.bytes().nth(i).unwrap();
-        (l, r) = match step {
+        let curr_instruction = instructions.bytes().nth(i).unwrap();
+        (l, r) = match curr_instruction {
             // we can always unwrap, because it always ends in R (last Z)
             b'L' => map.get(&l).unwrap().clone(),
             b'R' => match map.get(&r) {
@@ -87,7 +87,7 @@ fn count_steps(start: &str, ends: &[String], map: &BTreeMap<String, (String, Str
                 // Z is not a key in the map, so we got to the end
                 None => break,
             },
-            _ => unreachable!("bad input in steps, only L and R are allowed"),
+            _ => unreachable!("bad input in instructions, only L and R are allowed"),
         };
         n_steps += 1;
         i += 1;
