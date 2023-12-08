@@ -46,11 +46,16 @@ fn main() {
         }
     }
 
-    let (mut l, mut r) = map.get("AAA").unwrap().clone();
+    let n_steps = find_steps("AAA", "ZZZ", &map, &steps);
+    println!("part one {n_steps}");
+}
+
+fn find_steps(start: &str, end: &str, map: &BTreeMap<String, (String, String)>, steps: &str) -> u32 {
+    let (mut l, mut r) = map.get(start).unwrap().clone();
     let mut n_steps = 1;
     let mut i = 0;
 
-    while l != "ZZZ" || r != "ZZZ" {
+    while l != end || r != end {
         if i == steps.len() {
             i = 0;
         }
@@ -70,5 +75,5 @@ fn main() {
         i += 1;
     }
 
-    println!("part one {n_steps}");
+    n_steps
 }
