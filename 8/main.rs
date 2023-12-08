@@ -40,9 +40,9 @@ fn main() {
         right.remove(0); // \s
 
         if origin != "ZZZ" {
-            if !map.contains_key(&origin) {
-                map.insert(origin, (left, right));
-            }
+            // just insert the first one
+            map.entry(origin)
+                .or_insert((left, right));
         }
     }
 
