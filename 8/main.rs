@@ -56,17 +56,13 @@ fn main() {
         }
         let step = steps.bytes().nth(i).unwrap();
         (l, r) = match step {
-            b'L' => {
-                if map.get(&l).is_none() {
-                    break;
-                }
-                map.get(&l).unwrap().clone()
+            b'L' => match map.get(&l) {
+                Some(directions) => directions.clone(),
+                None => break,
             },
-            b'R' => {
-                if map.get(&r).is_none() {
-                    break;
-                }
-                map.get(&r).unwrap().clone()
+            b'R' => match map.get(&r) {
+                Some(directions) => directions.clone(),
+                None => break,
             },
             _ => unreachable!("bad input, only L and R are allowed"),
         };
