@@ -24,7 +24,6 @@ fn main() {
 
     let mut map = BTreeMap::new();
     let mut a_steps = vec![];
-    let mut z_steps = vec![];
 
     for line in lines {
         // CCC = (BBB, DDD)
@@ -47,34 +46,34 @@ fn main() {
             a_steps.push(origin.clone());
         }
 
-        if origin.ends_with('Z') {
-            z_steps.push(origin);
-        } else {
-            // we don't push Z into the map
-            // so we don't loop forever in count_steps
+        // we don't push Z into the map
+        // so we don't loop forever in count_steps
+        if !origin.ends_with('Z') {
             map.entry(origin)
-                // just insert the first one
+                // just insert the first occurrence
                 .or_insert((left, right));
         }
     }
 
-    let n_steps = count_steps("AAA", &["ZZZ".to_string()], &map, &instructions);
+    let n_steps = count_steps("AAA", &map, &instructions);
     println!("part one {n_steps}");
 
     let mut everyone_at_z = 1;
     for a_step in a_steps {
-        let n_steps = count_steps(&a_step, &z_steps, &map, &instructions);
+        let n_steps = count_steps(&a_step, &map, &instructions);
         everyone_at_z = lcm(everyone_at_z, n_steps);
     }
     println!("part two: {everyone_at_z}");
 }
 
-fn count_steps(start: &str, ends: &[String], map: &BTreeMap<String, (String, String)>, instructions: &str) -> u64 {
+// counts the steps until we find a Z in the right, aka (_, --Z)
+// this only works if the map doesn't contain keys that end w/ Z
+fn count_steps(start: &str, map: &BTreeMap<String, (String, String)>, instructions: &str) -> u64 {
     let (mut l, mut r) = map.get(start).unwrap().clone();
     let mut n_steps = 1;
     let mut i = 0;
 
-    while !ends.contains(&l) || !ends.contains(&r) {
+    loop {
         if i == instructions.len() {
             i = 0;
         }
