@@ -48,7 +48,7 @@ fn main() {
         }
 
         if origin.ends_with('Z') {
-            z_steps.push(origin.clone());
+            z_steps.push(origin);
         } else {
             // we don't push Z into the map
             // so we don't loop forever in find_steps
