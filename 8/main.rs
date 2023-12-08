@@ -64,11 +64,12 @@ fn main() {
     let n_steps = find_steps("AAA", &["ZZZ".to_string()], &map, &steps);
     println!("part one {n_steps}");
 
-    println!("part two:");
+    let mut everyone_at_z = 1;
     for a_step in a_steps {
         let n_steps = find_steps(&a_step, &z_steps, &map, &steps);
-        println!("{a_step}: {n_steps}");
+        everyone_at_z = lcm(everyone_at_z, n_steps);
     }
+    println!("part two: {everyone_at_z}");
 }
 
 fn find_steps(start: &str, ends: &[String], map: &BTreeMap<String, (String, String)>, steps: &str) -> u64 {
@@ -97,4 +98,28 @@ fn find_steps(start: &str, ends: &[String], map: &BTreeMap<String, (String, Stri
     }
 
     n_steps
+}
+
+fn lcm(first: u64, second: u64) -> u64 {
+    first * second / gcd(first, second)
+}
+
+fn gcd(first: u64, second: u64) -> u64 {
+    let mut max = first;
+    let mut min = second;
+    if min > max {
+        let val = max;
+        max = min;
+        min = val;
+    }
+
+    loop {
+        let res = max % min;
+        if res == 0 {
+            return min;
+        }
+
+        max = min;
+        min = res;
+    }
 }
