@@ -12,9 +12,9 @@ where P: AsRef<Path>, {
 fn main() {
     // let mut lines = read_lines("./example1").unwrap(); // 2
     // let mut lines = read_lines("./example2").unwrap(); // 6
-    let mut lines = read_lines("./example_part_two").unwrap(); // 6
-    // let mut lines = read_lines("./input").unwrap(); // 18157, 19783 (too low),
-    // 201405124411 (lcm, wrong ;-;)
+    // let mut lines = read_lines("./example_part_two").unwrap(); // 6
+    let mut lines = read_lines("./input").unwrap(); // 18157, 19783 (too low),
+    // 201405124411 (lcm, wrong ;-;), 14299763833181 (yay!)
 
     // LLR
     let steps = lines.next().unwrap().unwrap();
@@ -23,8 +23,8 @@ fn main() {
     let _ = lines.next();
 
     // let a_steps = ["AAA", "RLA", "QLA", "QFA", "RXA", "JSA"];
-    // let z_steps = ["QCZ", "LRZ", "ZZZ", "PQZ", "VHZ", "JJZ"];
-    let z_steps = ["11Z", "22Z"];
+    let z_steps = ["QCZ", "LRZ", "ZZZ", "PQZ", "VHZ", "JJZ"];
+    // let z_steps = ["11Z", "22Z"];
 
     let mut map = BTreeMap::new();
 
@@ -62,24 +62,24 @@ fn main() {
     //     println!("part two {a_step}: {n_steps}");
     // }
     println!("part two:");
-    // let n_steps = find_steps("AAA", &["ZZZ"], &map, &steps);
-    // println!("{} - {}: {n_steps}", "AAA", "ZZZ"); // 18157
-    // let n_steps = find_steps("RLA", &["JJZ"], &map, &steps);
-    // println!("{} - {}: {n_steps}", "RLA", "JJZ"); // 14363
-    // let n_steps = find_steps("QLA", &["VHZ"], &map, &steps);
-    // println!("{} - {}: {n_steps}", "QLA", "VHZ"); // 16531
-    // let n_steps = find_steps("QFA", &["PQZ"], &map, &steps);
-    // println!("{} - {}: {n_steps}", "QFA", "PQZ"); // 12737
-    // let n_steps = find_steps("RXA", &["QCZ"], &map, &steps);
-    // println!("{} - {}: {n_steps}", "RXA", "QCZ"); // 19783 (max)
-    // let n_steps = find_steps("AAA", &["LRZ"], &map, &steps);
-    // println!("{} - {}: {n_steps}", "JSA", "LRZ"); // 18157
+    let n_steps = find_steps("AAA", &["ZZZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "AAA", "ZZZ"); // 18157
+    let n_steps = find_steps("RLA", &["JJZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "RLA", "JJZ"); // 14363
+    let n_steps = find_steps("QLA", &["VHZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "QLA", "VHZ"); // 16531
+    let n_steps = find_steps("QFA", &["PQZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "QFA", "PQZ"); // 12737
+    let n_steps = find_steps("RXA", &["QCZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "RXA", "QCZ"); // 19783 (max)
+    let n_steps = find_steps("JSA", &["LRZ"], &map, &steps);
+    println!("{} - {}: {n_steps}", "JSA", "LRZ"); // 19241
 
     // example part two
-    let n_steps = find_steps("11A", &["11Z"], &map, &steps);
-    println!("{} - {}: {n_steps}", "11A", "11Z"); // 18157
-    let n_steps = find_steps("22A", &["22Z"], &map, &steps);
-    println!("{} - {}: {n_steps}", "22A", "22Z"); // 18157
+    // let n_steps = find_steps("11A", &["11Z"], &map, &steps);
+    // println!("{} - {}: {n_steps}", "11A", "11Z"); // 18157
+    // let n_steps = find_steps("22A", &["22Z"], &map, &steps);
+    // println!("{} - {}: {n_steps}", "22A", "22Z"); // 18157
 }
 
 // fn find_steps(start: &str, end: &str, map: &BTreeMap<String, (String, String)>, steps: &str) -> u32 {
