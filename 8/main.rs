@@ -14,9 +14,9 @@ fn main() {
     // let lines = read_lines("./input").unwrap();
 
     // LLR
-    let path = lines.next().unwrap().unwrap();
+    let steps = lines.next().unwrap().unwrap();
 
-    println!("{path}");
+    dbg!(steps);
 
     // empty line
     let _ = lines.next();
@@ -24,6 +24,20 @@ fn main() {
     for line in lines {
         // CCC = (BBB, DDD)
         let line = line.unwrap();
-        println!("{line}");
+        let mut line = line.split('=');
+
+        let mut path = line.next().unwrap().to_owned();
+        path.pop(); // \s
+
+        let mut options = line.next().unwrap().split(',');
+        let mut left = options.next().unwrap().to_owned();
+        let mut right = options.next().unwrap().to_owned();
+
+        left.remove(0); // (
+        left.remove(0); // \s
+        right.remove(4); // )
+        right.remove(0); // \s
+
+        println!("{left}, {right}");
     }
 }
