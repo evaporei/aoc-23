@@ -9,8 +9,9 @@ where P: AsRef<Path>, {
 }
 
 fn main() {
-    let lines = read_lines("./example_part_one").unwrap();
-    // let lines = read_lines("./input").unwrap();
+    // let lines = read_lines("./example_part_one").unwrap(); // 114
+    let lines = read_lines("./input").unwrap(); // 1930746032
+    let mut extrapolated_sum = 0;
 
     for line in lines {
         let line = line.unwrap();
@@ -48,8 +49,13 @@ fn main() {
             }
         }
 
+        let new_history = lists[0][lists[0].len() - 1];
+        extrapolated_sum += new_history;
+
         dbg!("after", &lists);
     }
+
+    println!("part one {extrapolated_sum}");
 }
 
 fn diff(mut start: Vec<Vec<i32>>, numbers: Vec<i32>) -> Vec<Vec<i32>> {
