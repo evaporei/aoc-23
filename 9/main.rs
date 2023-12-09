@@ -70,8 +70,9 @@ fn add_new_history(lists: &mut Vec<Vec<i32>>) {
         let sum = curr_last_elem + curr_to_add;
         curr_to_add = sum;
         lists[rev_i].push(sum);
-        if rev_i != 0 {
-            rev_i -= 1;
+        if rev_i == 0 {
+            break;
         }
+        rev_i -= 1;
     }
 }
