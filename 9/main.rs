@@ -23,28 +23,7 @@ fn main() {
 
         let mut lists = diff(vec![], numbers);
 
-        // push a repeating 3 or 2 or 1
-        // they're all the same in the last list
-        let last_elem_idx = lists.len() - 1;
-        let last_list = &mut lists[last_elem_idx];
-        let mut curr_to_add = last_list[0];
-        last_list.push(curr_to_add);
-
-        let old_len = lists[0].len();
-
-        let mut rev_i = lists.len() - 2;
-
-        // we push to the first list, this loop ends
-        while old_len == lists[0].len() {
-            let last_idx = lists[rev_i].len() - 1;
-            let curr_last_elem = lists[rev_i][last_idx];
-            let sum = curr_last_elem + curr_to_add;
-            curr_to_add = sum;
-            lists[rev_i].push(sum);
-            if rev_i != 0 {
-                rev_i -= 1;
-            }
-        }
+        add_new_history(&mut lists);
 
         let new_history = lists[0][lists[0].len() - 1];
         extrapolated_sum += new_history;
@@ -69,4 +48,30 @@ fn diff(mut start: Vec<Vec<i32>>, numbers: Vec<i32>) -> Vec<Vec<i32>> {
     start.push(numbers);
 
     diff(start, next)
+}
+
+// adds a new history to the first list (input)
+fn add_new_history(lists: &mut Vec<Vec<i32>>) {
+    // push a repeating 3 or 2 or 1
+    // they're all the same in the last list
+    let last_elem_idx = lists.len() - 1;
+    let last_list = &mut lists[last_elem_idx];
+    let mut curr_to_add = last_list[0];
+    last_list.push(curr_to_add);
+
+    let old_len = lists[0].len();
+
+    let mut rev_i = lists.len() - 2;
+
+    // we push to the first list, this loop ends
+    while old_len == lists[0].len() {
+        let last_idx = lists[rev_i].len() - 1;
+        let curr_last_elem = lists[rev_i][last_idx];
+        let sum = curr_last_elem + curr_to_add;
+        curr_to_add = sum;
+        lists[rev_i].push(sum);
+        if rev_i != 0 {
+            rev_i -= 1;
+        }
+    }
 }
