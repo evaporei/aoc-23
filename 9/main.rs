@@ -21,10 +21,7 @@ fn main() {
             .map(|n| n.parse().unwrap())
             .collect();
 
-        // dbg!(&numbers);
-
         let mut lists = diff(vec![], numbers);
-        dbg!("before", &lists);
 
         // push a repeating 3 or 2 or 1
         // they're all the same in the last list
@@ -51,8 +48,6 @@ fn main() {
 
         let new_history = lists[0][lists[0].len() - 1];
         extrapolated_sum += new_history;
-
-        dbg!("after", &lists);
     }
 
     println!("part one {extrapolated_sum}");
@@ -72,8 +67,6 @@ fn diff(mut start: Vec<Vec<i32>>, numbers: Vec<i32>) -> Vec<Vec<i32>> {
         .collect();
 
     start.push(numbers);
-
-    // dbg!(&next);
 
     diff(start, next)
 }
