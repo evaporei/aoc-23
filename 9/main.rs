@@ -22,14 +22,17 @@ fn main() {
 
         // dbg!(&numbers);
 
-        let lists = diff(vec![numbers.clone()], &numbers);
+        let lists = diff(vec![], numbers);
 
         dbg!(&lists);
     }
 }
 
-fn diff(mut start: Vec<Vec<i32>>, numbers: &Vec<i32>) -> Vec<Vec<i32>> {
+fn diff(mut start: Vec<Vec<i32>>, numbers: Vec<i32>) -> Vec<Vec<i32>> {
     if numbers.iter().all(|n| *n == 0) {
+        // we don't need to push 'numbers'
+        // cause they won't be used
+        // (all zeroes)
         return start;
     }
 
@@ -38,9 +41,9 @@ fn diff(mut start: Vec<Vec<i32>>, numbers: &Vec<i32>) -> Vec<Vec<i32>> {
         .map(|ns| ns[1] - ns[0])
         .collect();
 
+    start.push(numbers);
+
     // dbg!(&next);
 
-    start.push(next.clone());
-
-    diff(start, &next)
+    diff(start, next)
 }
