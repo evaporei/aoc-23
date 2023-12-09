@@ -20,15 +20,17 @@ fn main() {
             .map(|n| n.parse().unwrap())
             .collect();
 
-        dbg!(&numbers);
+        // dbg!(&numbers);
 
-        diff(&numbers);
+        let lists = diff(vec![numbers.clone()], &numbers);
+
+        dbg!(&lists);
     }
 }
 
-fn diff(numbers: &[i32]) {
+fn diff(mut start: Vec<Vec<i32>>, numbers: &Vec<i32>) -> Vec<Vec<i32>> {
     if numbers.iter().all(|n| *n == 0) {
-        return;
+        return start;
     }
 
     let next: Vec<i32> = numbers
@@ -36,7 +38,9 @@ fn diff(numbers: &[i32]) {
         .map(|ns| ns[1] - ns[0])
         .collect();
 
-    dbg!(&next);
+    // dbg!(&next);
 
-    diff(&next)
+    start.push(next.clone());
+
+    diff(start, &next)
 }
