@@ -20,6 +20,23 @@ fn main() {
             .map(|n| n.parse().unwrap())
             .collect();
 
-        dbg!(numbers);
+        dbg!(&numbers);
+
+        diff(&numbers);
     }
+}
+
+fn diff(numbers: &[i32]) {
+    if numbers.iter().all(|n| *n == 0) {
+        return;
+    }
+
+    let next: Vec<i32> = numbers
+        .windows(2)
+        .map(|ns| ns[1] - ns[0])
+        .collect();
+
+    dbg!(&next);
+
+    diff(&next)
 }
