@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, BufRead};
+use std::io::{self, BufRead, Write, Read};
 use std::path::Path;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
@@ -10,7 +10,10 @@ where P: AsRef<Path>, {
 
 // const FILENAME: &str = "./simple_loop"; // 4
 // const FILENAME: &str = "./complex_loop"; // 8
-const FILENAME: &str = "./input"; // 6860
+// const FILENAME: &str = "./area_input1";
+// const FILENAME: &str = "./area_input2";
+// const FILENAME: &str = "./area_input3";
+const FILENAME: &str = "./input"; // 6860, 593 (too high)
 
 type Pos = (usize, usize);
 type Map = Vec<Vec<u8>>;
@@ -21,6 +24,8 @@ fn main() {
 
     let s = find_starting_position(&map);
     let connected_pipes = find_first_pipes(&map, s);
+
+    let mut loop_pipes = vec![];
 
     let mut steps = 1;
     let mut cursor1 = connected_pipes.0;
@@ -38,9 +43,58 @@ fn main() {
 
         (prev1, prev2) = (tmp1, tmp2);
         steps += 1;
+
+        loop_pipes.push(prev1);
+        loop_pipes.push(prev2);
     }
 
     println!("part one: {steps}");
+
+    // push furthest position
+    loop_pipes.push(cursor1);
+
+    // dbg!(&loop_pipes);
+    // dbg!(loop_pipes.len()); // 45 pipes are from the loop
+
+    // let inside_loop = calculate_area(&loop_pipes);
+
+    // let mut viz = file::open("./viz").unwrap();
+    let mut viz = String::with_capacity(140);
+    for (i, line) in map.iter().enumerate() {
+        for (j, _ch) in line.iter().enumerate() {
+            if loop_pipes.contains(&(i, j)) {
+                // viz.write(b"V").unwrap();
+                viz.push('V');
+            } else {
+                // viz.write(b".").unwrap();
+                viz.push('.');
+            }
+        }
+        // viz.write(b"\n").unwrap();
+        viz.push('\n');
+    }
+
+    let mut viz = File::open("./final_viz").unwrap();
+    let mut contents = String::new();
+    viz.read_to_string(&mut contents).unwrap();
+    println!("{contents}");
+    println!("part two: {}", contents.bytes().filter(|ch| *ch == b'.').count());
+    // println!("{viz}");
+
+    // type pipe = | or - or J or L or F or 7 # 6
+    // type tile = S or . or pipe # 3
+    // total (grid) area 140x140 = 19_600 -> n of pipes
+    //
+    // shape area = inside perimeter
+    // result = total - perimeter - shape (inside)
+
+
+    // .......
+    // .VVVV..
+    // .V..VV.
+    // .VVVVV.
+
+    // println!("part two: {inside_loop}");
 }
 
 fn collect_map(lines: io::Lines<io::BufReader<File>>) -> Map {
@@ -214,4 +268,8 @@ fn find_next(pos: Pos, prev: Pos, ch: u8) -> Pos {
     let pipe = Pipe::from(ch);
     let new_dir = pipe.next(origin);
     new_dir.new_pos(pos)
+}
+
+fn calculate_area(perimeter: &Vec<Pos>) -> usize {
+    0
 }
