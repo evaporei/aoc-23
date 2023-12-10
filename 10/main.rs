@@ -149,6 +149,7 @@ impl Dir {
             Self::Down => Self::Up,
         }
     }
+    // increment pos to the given direction
     fn new_pos(self, pos: Pos) -> Pos {
         match self {
             Self::Left => (pos.0, pos.1 - 1),
@@ -183,6 +184,7 @@ impl From<u8> for Pipe {
 }
 
 impl Pipe {
+    // get the other side of the pipe
     fn next(self, prev: Dir) -> Dir {
         match (self, prev) {
             (Self::Vertical, dir) => dir.opposite(),
