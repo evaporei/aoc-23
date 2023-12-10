@@ -12,21 +12,35 @@ const FILENAME: &str = "./simple_loop";
 // const FILENAME: &str = "./complex_loop";
 // const FILENAME: &str = "./input";
 
+type Pos = (usize, usize);
+type Map = Vec<Vec<u8>>;
+
 fn main() {
     let lines = read_lines(FILENAME).unwrap();
-    let s = find_starting_position(lines);
+    let map = collect_map(lines);
+
+    let s = find_starting_position(&map);
 
     println!("{s:?}");
 
 
 }
 
-fn find_starting_position(lines: io::Lines<io::BufReader<File>>) -> (usize, usize) {
-    for (i, line) in lines.enumerate() {
-        let line = line.unwrap();
+fn collect_map(lines: io::Lines<io::BufReader<File>>) -> Map {
+    let mut map = Vec::with_capacity(140);
 
-        for (j, ch) in line.bytes().enumerate() {
-            if ch == b'S' {
+    for line in lines {
+        let line = line.unwrap();
+        map.push(line.bytes().collect());
+    }
+
+    map
+}
+
+fn find_starting_position(map: &Map) -> Pos {
+    for (i, line) in map.iter().enumerate() {
+        for (j, ch) in line.iter().enumerate() {
+            if *ch == b'S' {
                 return (i, j);
             }
         }
