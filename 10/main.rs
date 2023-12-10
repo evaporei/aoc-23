@@ -8,10 +8,12 @@ where P: AsRef<Path>, {
     Ok(io::BufReader::new(file).lines())
 }
 
+const FILENAME: &str = "./simple_loop";
+// const FILENAME: &str = "./complex_loop";
+// const FILENAME: &str = "./input";
+
 fn main() {
-    let lines = read_lines("./simple_loop").unwrap();
-    // let lines = read_lines("./complex_loop").unwrap();
-    // let lines = read_lines("./input").unwrap();
+    let lines = read_lines(FILENAME).unwrap();
     let s = find_starting_position(lines);
 
     println!("{s:?}");
