@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, BufRead, Write, Read};
+use std::io::{self, BufRead};
 use std::path::Path;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
@@ -15,8 +15,14 @@ where P: AsRef<Path>, {
 // const FILENAME: &str = "./area_input3";
 const FILENAME: &str = "./input"; // 6860, 593 (too high)
 
+// natural, obviously
 type Pos = (usize, usize);
+type IntPos = (i32, i32);
 type Map = Vec<Vec<u8>>;
+
+fn nat_to_int(pos: Pos) -> IntPos {
+    (pos.0 as i32, pos.1 as i32)
+}
 
 fn main() {
     let lines = read_lines(FILENAME).unwrap();
@@ -44,41 +50,53 @@ fn main() {
         (prev1, prev2) = (tmp1, tmp2);
         steps += 1;
 
-        loop_pipes.push(prev1);
-        loop_pipes.push(prev2);
+        loop_pipes.push(nat_to_int(prev1));
+        loop_pipes.push(nat_to_int(prev2));
     }
 
     println!("part one: {steps}");
 
     // push furthest position
-    loop_pipes.push(cursor1);
+    loop_pipes.push(nat_to_int(cursor1));
 
+    let mut inside_loop = 0;
     // dbg!(&loop_pipes);
-    // dbg!(loop_pipes.len()); // 45 pipes are from the loop
+    for (i, line) in map.iter().enumerate() {
+        for (j, _ch) in line.iter().enumerate() {
+            if is_inside_loop(&loop_pipes, nat_to_int((i, j))) {
+                inside_loop += 1;
+            }
+        }
+    }
+
+    println!("part two: {inside_loop}");
 
     // let inside_loop = calculate_area(&loop_pipes);
 
     // let mut viz = file::open("./viz").unwrap();
-    let mut viz = String::with_capacity(140);
-    for (i, line) in map.iter().enumerate() {
-        for (j, _ch) in line.iter().enumerate() {
-            if loop_pipes.contains(&(i, j)) {
-                // viz.write(b"V").unwrap();
-                viz.push('V');
-            } else {
-                // viz.write(b".").unwrap();
-                viz.push('.');
-            }
-        }
-        // viz.write(b"\n").unwrap();
-        viz.push('\n');
-    }
-
-    let mut viz = File::open("./final_viz").unwrap();
-    let mut contents = String::new();
-    viz.read_to_string(&mut contents).unwrap();
-    println!("{contents}");
-    println!("part two: {}", contents.bytes().filter(|ch| *ch == b'.').count());
+    // let mut viz = String::with_capacity(140 * 140);
+    // for (i, line) in map.iter().enumerate() {
+    //     for (j, _ch) in line.iter().enumerate() {
+    //         if loop_pipes.contains(&(i, j)) {
+    //             // viz.write(b"V").unwrap();
+    //             viz.push('V');
+    //         } else {
+    //             // viz.write(b".").unwrap();
+    //             viz.push('.');
+    //         }
+    //     }
+    //     // viz.write(b"\n").unwrap();
+    //     viz.push('\n');
+    // }
+    //
+    // let mut viz = File::open("./quadrant").unwrap(); // 349, 345
+    // // let mut viz = File::open("./final_viz").unwrap();
+    // let mut contents = String::new();
+    // viz.read_to_string(&mut contents).unwrap();
+    // println!("{contents}");
+    // println!("part two: {}", contents.bytes().filter(|ch| *ch == b'.').count());
+    // dbg!(loop_pipes.len()); // 13719
+    // println!("debug V: {}", contents.bytes().filter(|ch| *ch == b'V').count()); // 13719
     // println!("{viz}");
 
     // type pipe = | or - or J or L or F or 7 # 6
@@ -270,6 +288,71 @@ fn find_next(pos: Pos, prev: Pos, ch: u8) -> Pos {
     new_dir.new_pos(pos)
 }
 
-fn calculate_area(perimeter: &Vec<Pos>) -> usize {
-    0
+// fn min(x: i32, y: i32) -> i32 {
+//     if x < y { x } else { y }
+// }
+//
+// fn max(x: i32, y: i32) -> i32 {
+//     if x > y { x } else { y }
+// }
+//
+// 8261
+// fn is_inside_loop(perimeter: &Vec<IntPos>, point: IntPos) -> bool {
+//     let len = perimeter.len();
+//     let mut inside = false;
+//     let (x, y) = point;
+//     let (p1x, p1y) = perimeter[0];
+//     for i in 0..len {
+//         let (p2x, p2y) = perimeter[i % len];
+//         if y > min(p1y, p2y) {
+//             if y <= max(p1y, p2y) {
+//                 if x <= max(p1x, p2x) {
+//                     let mut xinters = None;
+//                     if p1y != p2y {
+//                         xinters = Some((y - p1y) * (p2x - p1x)
+//                             / (p2y - p1y) + p1x);
+//                     }
+//                     if p1x == p2x || Some(x) <= xinters {
+//                         inside = !inside;
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//
+//     inside
+// }
+
+// even odd algorithm, not working
+// 5019
+fn is_inside_loop(perimeter: &Vec<IntPos>, point: IntPos) -> bool {
+    let mut inside = false;
+    let mut j = perimeter.len() - 1;
+    let (x, y) = point;
+    for i in 0..perimeter.len() {
+        if x == perimeter[i].0 && y == perimeter[i].1 {
+            // point is in the loop line
+            return false;
+        }
+        if (perimeter[i].1 > y) != (perimeter[j].1 > y) {
+            let slope = (x - perimeter[i].0)
+                * (perimeter[j].1 - perimeter[i].1)
+                - (perimeter[j].0 - perimeter[i].0)
+                * (y - perimeter[i].1); 
+            if slope == 0 {
+                // point is on boundary
+                return false;
+            }
+            if (slope < 0) != (perimeter[j].1 < perimeter[i].1) {
+                inside = !inside;
+            }
+        }
+        j = i;
+    }
+
+    inside
 }
+
+// fn calculate_area(perimeter: &Vec<Pos>) -> usize {
+//     0
+// }
