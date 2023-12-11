@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, BufRead};
+use std::io::{self, BufRead, Read};
 use std::path::Path;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
@@ -13,7 +13,8 @@ where P: AsRef<Path>, {
 // const FILENAME: &str = "./area_input1";
 // const FILENAME: &str = "./area_input2";
 // const FILENAME: &str = "./area_input3";
-const FILENAME: &str = "./input"; // 6860, 593 (too high)
+const FILENAME: &str = "./input"; // 6860, 593 (too high), 343 (works, but I need to learn another
+                                  // strategy other than split into quadrants
 
 // natural, obviously
 type Pos = (usize, usize);
@@ -59,17 +60,17 @@ fn main() {
     // push furthest position
     loop_pipes.push(nat_to_int(cursor1));
 
-    let mut inside_loop = 0;
-    // dbg!(&loop_pipes);
-    for (i, line) in map.iter().enumerate() {
-        for (j, _ch) in line.iter().enumerate() {
-            if is_inside_loop(&loop_pipes, nat_to_int((i, j))) {
-                inside_loop += 1;
-            }
-        }
-    }
+    // let mut inside_loop = 0;
+    // // dbg!(&loop_pipes);
+    // for (i, line) in map.iter().enumerate() {
+    //     for (j, _ch) in line.iter().enumerate() {
+    //         if is_inside_loop(&loop_pipes, nat_to_int((i, j))) {
+    //             inside_loop += 1;
+    //         }
+    //     }
+    // }
 
-    println!("part two: {inside_loop}");
+    // println!("part two: {inside_loop}");
 
     // let inside_loop = calculate_area(&loop_pipes);
 
@@ -89,14 +90,11 @@ fn main() {
     //     viz.push('\n');
     // }
     //
-    // let mut viz = File::open("./quadrant").unwrap(); // 349, 345
+    let mut viz = File::open("./quadrant").unwrap(); // 349, 345, 343
     // // let mut viz = File::open("./final_viz").unwrap();
-    // let mut contents = String::new();
-    // viz.read_to_string(&mut contents).unwrap();
-    // println!("{contents}");
-    // println!("part two: {}", contents.bytes().filter(|ch| *ch == b'.').count());
-    // dbg!(loop_pipes.len()); // 13719
-    // println!("debug V: {}", contents.bytes().filter(|ch| *ch == b'V').count()); // 13719
+    let mut contents = String::new();
+    viz.read_to_string(&mut contents).unwrap();
+    println!("part two: {}", contents.bytes().filter(|ch| *ch == b'.').count()); // 343
     // println!("{viz}");
 
     // type pipe = | or - or J or L or F or 7 # 6
