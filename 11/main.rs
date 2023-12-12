@@ -22,8 +22,8 @@ fn print_map(map: &SpaceMap) {
     }
 }
 
-// const FILENAME: &str = "./example_input";
-const FILENAME: &str = "./input";
+// const FILENAME: &str = "./example_input"; // 374
+const FILENAME: &str = "./input"; // 9623138
 
 fn main() {
     let lines = read_lines(FILENAME).unwrap();
@@ -31,8 +31,8 @@ fn main() {
     expand(&mut map);
     let galaxies = find_galaxies(&map);
     let pairs = pair_galaxies(&galaxies);
-    // dbg!(&pairs);
-    dbg!(pairs.len());
+    let distances = pair_distances(&pairs);
+    println!("part one: {}", distances.iter().sum::<i32>());
 }
 
 fn collect_map(lines: io::Lines<io::BufReader<File>>) -> SpaceMap {
@@ -119,4 +119,19 @@ fn pair_galaxies(galaxies: &BTreeSet<Pos>) -> BTreeSet<(Pos, Pos)> {
         }
     }
     pairs
+}
+
+fn distance(pos1: Pos, pos2: Pos) -> i16 {
+    let x_steps = pos1.0 as i16 - pos2.0 as i16;
+    let y_steps = pos1.1 as i16 - pos2.1 as i16;
+
+    x_steps.abs() + y_steps.abs()
+}
+
+fn pair_distances(pairs: &BTreeSet<(Pos, Pos)>) -> Vec<i32> {
+    let mut distances = Vec::new();
+    for (galaxy1, galaxy2) in pairs {
+        distances.push(distance(*galaxy1, *galaxy2) as i32);
+    }
+    distances
 }
