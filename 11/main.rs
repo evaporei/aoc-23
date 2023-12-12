@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
@@ -28,6 +29,9 @@ fn main() {
     let lines = read_lines(FILENAME).unwrap();
     let mut map = collect_map(lines);
     expand(&mut map);
+    let galaxies = find_galaxies(&map);
+    dbg!(&galaxies);
+    dbg!(galaxies.len());
 }
 
 fn collect_map(lines: io::Lines<io::BufReader<File>>) -> SpaceMap {
@@ -83,4 +87,20 @@ fn expand(map: &mut SpaceMap) {
         }
         vertical_idxs.pop();
     }
+}
+
+type Pos = (usize, usize);
+
+fn find_galaxies(map: &SpaceMap) -> BTreeSet<Pos> {
+    let mut set = BTreeSet::new();
+
+    for i in 0..map.len() {
+        for j in 0..map[0].len() {
+            if map[i][j] == b'#' {
+                set.insert((i, j));
+            }
+        }
+    }
+
+    set
 }
