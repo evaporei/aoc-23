@@ -22,8 +22,8 @@ fn print_map(map: &SpaceMap) {
     }
 }
 
-// const FILENAME: &str = "./example_input"; // 374
-const FILENAME: &str = "./input"; // 9623138
+// const FILENAME: &str = "./example_input"; // 374, 292 (w/out expansion)
+const FILENAME: &str = "./input"; // 9623138, 8896326 (w/out expansion)
 
 fn main() {
     let lines = read_lines(FILENAME).unwrap();
@@ -50,6 +50,10 @@ fn is_empty(slice: &[u8]) -> bool {
     slice.iter().all(|ch| *ch == b'.')
 }
 
+const EXPANSION_FACTOR: usize = 1;
+// const EXPANSION_FACTOR: usize = 10;
+// const EXPANSION_FACTOR: usize = 100;
+
 fn expand(map: &mut SpaceMap) {
     let mut horizontal_idxs = vec![];
     for i in 0..map.len() {
@@ -60,10 +64,12 @@ fn expand(map: &mut SpaceMap) {
     }
 
     while !horizontal_idxs.is_empty() {
-        map.insert(
-            *horizontal_idxs.last().unwrap(),
-            std::iter::repeat(b'.').take(map[0].len()).collect::<Vec<u8>>()
-        );
+        for _ in 0..EXPANSION_FACTOR {
+            map.insert(
+                *horizontal_idxs.last().unwrap(),
+                std::iter::repeat(b'.').take(map[0].len()).collect::<Vec<u8>>()
+            );
+        }
         horizontal_idxs.pop();
     }
 
@@ -83,8 +89,10 @@ fn expand(map: &mut SpaceMap) {
 
     while !vertical_idxs.is_empty() {
         let last = vertical_idxs.last().unwrap();
-        for i in 0..map.len() {
-            map[i].insert(*last, b'.');
+        for _ in 0..EXPANSION_FACTOR {
+            for i in 0..map.len() {
+                map[i].insert(*last, b'.');
+            }
         }
         vertical_idxs.pop();
     }
