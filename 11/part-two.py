@@ -1,9 +1,9 @@
-one = 9623138
-ten = 16164446
-hundred = 81577526
+zero = 8_896_326
+ten = 15_437_634
+hundred = 80_850_714
 
 # 6541308
-print(ten - one)
+print(ten - zero)
 
 # 65413080
 print(hundred - ten)

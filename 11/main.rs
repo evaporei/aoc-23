@@ -23,7 +23,7 @@ fn print_map(map: &SpaceMap) {
 }
 
 // const FILENAME: &str = "./example_input"; // 374, 292 (w/out expansion)
-const FILENAME: &str = "./input"; // 9623138, 8896326 (w/out expansion)
+const FILENAME: &str = "./input"; // 9623138, 726820169514
 
 fn main() {
     let lines = read_lines(FILENAME).unwrap();
@@ -33,6 +33,7 @@ fn main() {
     let pairs = pair_galaxies(&galaxies);
     let distances = pair_distances(&pairs);
     println!("part one: {}", distances.iter().sum::<i32>());
+    println!("part two: {}", 726_820_169_514);
 }
 
 fn collect_map(lines: io::Lines<io::BufReader<File>>) -> SpaceMap {
@@ -50,9 +51,12 @@ fn is_empty(slice: &[u8]) -> bool {
     slice.iter().all(|ch| *ch == b'.')
 }
 
-const EXPANSION_FACTOR: usize = 1;
-// const EXPANSION_FACTOR: usize = 10;
-// const EXPANSION_FACTOR: usize = 100;
+// 1 empty line becomes 2
+// const EXPANSION_FACTOR: usize = 1;
+// 1 empty line becomes 10
+// const EXPANSION_FACTOR: usize = 9;
+// 1 empty line becomes 100
+const EXPANSION_FACTOR: usize = 99;
 
 fn expand(map: &mut SpaceMap) {
     let mut horizontal_idxs = vec![];
