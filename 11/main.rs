@@ -30,8 +30,9 @@ fn main() {
     let mut map = collect_map(lines);
     expand(&mut map);
     let galaxies = find_galaxies(&map);
-    dbg!(&galaxies);
-    dbg!(galaxies.len());
+    let pairs = pair_galaxies(&galaxies);
+    // dbg!(&pairs);
+    dbg!(pairs.len());
 }
 
 fn collect_map(lines: io::Lines<io::BufReader<File>>) -> SpaceMap {
@@ -103,4 +104,19 @@ fn find_galaxies(map: &SpaceMap) -> BTreeSet<Pos> {
     }
 
     set
+}
+
+// slow
+fn pair_galaxies(galaxies: &BTreeSet<Pos>) -> BTreeSet<(Pos, Pos)> {
+    let mut pairs = BTreeSet::new();
+    for galaxy1 in galaxies {
+        for galaxy2 in galaxies {
+            if galaxy1 != galaxy2 {
+                let mut ord = [galaxy1, galaxy2];
+                ord.sort(); // to not insert them twice
+                pairs.insert((*ord[0], *ord[1]));
+            }
+        }
+    }
+    pairs
 }
